@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="pageTitle">喝水了吗 | 分秒必争</title>
+    
+    <!-- PWA 配置 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="喝水了吗">
+    <meta name="application-name" content="喝水了吗">
+    <meta name="theme-color" content="#0a192f">
+    <meta name="description" content="智能喝水提醒，关爱健康每一天">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a192f' width='100' height='100' rx='20'/><text x='50' y='68' font-size='55' text-anchor='middle'>💧</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300d4ff' width='100' height='100' rx='20'/><text x='50' y='68' font-size='55' text-anchor='middle'>💧</text></svg>">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi5Zad5rC05LqG5ZCXIiwic2hvcnRfbmFtZSI6IuWWneawtOS6huWQlyIsImRlc2NyaXB0aW9uIjoi5pm66IO95Zad5rC05o+Q6YaSIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBhMTkyZiIsInRoZW1lX2NvbG9yIjoiIzAwZDRmZiIsInN0YXJ0X3VybCI6Ii4iLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCc+PHJlY3QgZmlsbD0nJTIzMDBkNGZmJyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgcng9JzIwJy8+PHRleHQgeD0nNTAnIHk9JzY4JyBmb250LXNpemU9JzU1JyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz7wn5KnPC90ZXh0Pjwvc3ZnPiIsInNpemVzIjoiYW55IiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn1dfQ==">
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        :root { --primary: #00d4ff; --accent: #ff006e; --gold: #ffd700; --success: #06ffa5; --bg1: #0a192f; --bg2: #112240; --water: #00bcd4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, 'Noto Sans SC', sans-serif; color: #fff; min-height: 100vh; background: linear-gradient(135deg, var(--bg1), var(--bg2)); }
+
+        .top-bar { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,25,47,0.95); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-size: 18px; font-weight: bold; }
+        .logo span { background: linear-gradient(90deg, var(--primary), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .top-right { display: flex; gap: 6px; align-items: center; }
+        .top-btn { background: rgba(255,255,255,0.1); border: none; padding: 5px 10px; border-radius: 15px; color: white; font-size: 11px; cursor: pointer; }
+        .lang-select { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 12px; color: white; font-size: 10px; cursor: pointer; }
+
+        .ad-bar { position: fixed; top: 42px; left: 0; right: 0; height: 50px; overflow: hidden; z-index: 99; background: rgba(0,0,0,0.3); }
+        .ad-container { display: flex; animation: scrollAds 30s linear infinite; }
+        .ad-item { min-width: 100vw; height: 50px; display: flex; align-items: center; justify-content: center; padding: 5px 15px; }
+        .ad-item.text { background: linear-gradient(90deg, #667eea, #764ba2); font-size: 13px; }
+        .ad-item.image img { max-height: 45px; max-width: 90%; object-fit: contain; }
+        .ad-item.video video { max-height: 45px; max-width: 90%; }
+        .ad-item.link { background: linear-gradient(90deg, #00d4ff, #8338ec); font-size: 12px; cursor: pointer; }
+        @keyframes scrollAds { 0%{transform:translateX(0)}100%{transform:translateX(-100%)} }
+
+        .main { padding: 102px 12px 70px; }
+
+        .culture-card { position: relative; border-radius: 14px; padding: 16px; overflow: hidden; margin-bottom: 12px; }
+        .culture-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; filter: brightness(0.35); }
+        .culture-content { position: relative; z-index: 1; }
+        .culture-label { font-size: 10px; color: var(--gold); margin-bottom: 6px; }
+        .culture-text { font-size: 14px; line-height: 1.8; }
+        .culture-source { font-size: 10px; color: rgba(255,255,255,0.5); text-align: right; margin-top: 6px; }
+        .culture-actions { display: flex; gap: 6px; margin-top: 10px; }
+        .culture-btn { flex: 1; padding: 6px; background: rgba(255,255,255,0.15); border: none; border-radius: 15px; color: white; font-size: 10px; cursor: pointer; }
+
+        .checkin-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: linear-gradient(90deg, rgba(255,215,0,0.08), rgba(6,255,165,0.08)); border-radius: 10px; margin-bottom: 15px; }
+        .checkin-info { display: flex; align-items: center; gap: 12px; }
+        .checkin-streak { font-size: 11px; }
+        .checkin-streak strong { color: var(--gold); font-size: 16px; }
+        .checkin-points { font-size: 10px; color: var(--success); }
+        .checkin-btn { padding: 6px 14px; background: linear-gradient(135deg, var(--gold), #ff8c00); border: none; border-radius: 15px; color: #000; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .checkin-btn.done { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); }
+
+        .clock-unit { background: rgba(0,0,0,0.25); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px 15px; }
+        .clock-area { display: flex; flex-direction: column; align-items: center; }
+
+        .clock-face { position: relative; width: 240px; height: 240px; border-radius: 50%; border: 5px solid var(--primary); box-shadow: 0 0 40px rgba(0,212,255,0.3), inset 0 0 30px rgba(0,0,0,0.5); background: radial-gradient(circle, rgba(10,25,47,0.8), rgba(0,0,0,0.9)); margin-bottom: 15px; }
+        .tick { position: absolute; left: 50%; top: 8px; width: 2px; height: 10px; background: rgba(255,255,255,0.4); transform-origin: 0 112px; }
+        .tick.major { width: 3px; height: 15px; background: var(--gold); transform-origin: 0 109px; }
+        .clock-num { position: absolute; font-size: 15px; font-weight: bold; color: var(--gold); }
+        .clock-num.n12 { top: 18px; left: 50%; transform: translateX(-50%); }
+        .clock-num.n3 { right: 16px; top: 50%; transform: translateY(-50%); }
+        .clock-num.n6 { bottom: 18px; left: 50%; transform: translateX(-50%); }
+        .clock-num.n9 { left: 16px; top: 50%; transform: translateY(-50%); }
+
+        .clock-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 110px; height: 110px; border-radius: 50%; background: rgba(0,20,40,0.9); border: 2px solid rgba(255,255,255,0.15); overflow: hidden; cursor: pointer; z-index: 5; display: flex; align-items: center; justify-content: center; }
+        .center-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .center-content img, .center-content video { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .center-text { font-size: 10px; line-height: 1.4; padding: 8px; color: rgba(255,255,255,0.85); }
+        .center-placeholder { font-size: 9px; color: rgba(255,255,255,0.4); }
+
+        .hand { position: absolute; left: 50%; bottom: 50%; transform-origin: 50% 100%; border-radius: 4px; z-index: 10; }
+        .hand-hour { width: 5px; height: 45px; margin-left: -2.5px; background: linear-gradient(to top, var(--primary), #fff); box-shadow: 0 0 10px var(--primary); }
+        .hand-minute { width: 4px; height: 65px; margin-left: -2px; background: linear-gradient(to top, #8338ec, #fff); box-shadow: 0 0 8px #8338ec; }
+        .hand-second { width: 2px; height: 85px; margin-left: -1px; background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        .hand-dot { position: absolute; width: 12px; height: 12px; background: var(--gold); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 20px var(--gold); z-index: 15; }
+
+        .digital-box { text-align: center; margin-bottom: 12px; }
+        .digital-time { font-size: 38px; font-weight: bold; font-family: 'Courier New', monospace; color: var(--primary); text-shadow: 0 0 25px rgba(0,212,255,0.6); letter-spacing: 2px; }
+        .digital-time .colon { animation: blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+        .digital-date { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 5px; }
+        .slogan { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 4px; font-style: italic; }
+
+        .tick-bar { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 6px 14px; background: rgba(255,255,255,0.05); border-radius: 18px; cursor: pointer; margin-bottom: 15px; }
+        .tick-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1s infinite; }
+        .tick-dot.off { background: #555; animation: none; }
+        @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+
+        .func-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .func-btn { display: flex; flex-direction: column; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; color: white; cursor: pointer; min-width: 55px; }
+        .func-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.15); }
+        .func-btn .icon { font-size: 22px; }
+        .func-btn .label { font-size: 9px; margin-top: 3px; color: rgba(255,255,255,0.7); }
+        .func-btn.voice { background: linear-gradient(135deg, var(--primary), #8338ec); border: none; }
+
+        .remind-section { margin-top: 5px; }
+        .remind-title { font-size: 12px; color: var(--gold); margin-bottom: 8px; }
+        .remind-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(255,107,157,0.1); border: 1px solid rgba(255,107,157,0.2); border-radius: 10px; margin-bottom: 6px; cursor: pointer; }
+        .remind-item .emoji { font-size: 20px; }
+        .remind-item .info { flex: 1; }
+        .remind-item .title { font-size: 12px; font-weight: 500; }
+        .remind-item .datetime { font-size: 10px; color: var(--gold); margin-top: 2px; font-family: monospace; }
+        .remind-item .countdown { font-size: 10px; color: var(--success); font-weight: bold; }
+
+        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,25,47,0.98); border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; padding: 6px 0 10px; z-index: 100; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; padding: 4px 8px; }
+        .nav-btn.active { color: var(--primary); }
+        .nav-btn .icon { font-size: 18px; }
+        .nav-btn .label { font-size: 8px; margin-top: 2px; }
+
+        .panel-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 199; display: none; }
+        .panel-overlay.show { display: block; }
+        .panel { position: fixed; top: 0; right: -100%; width: 92%; max-width: 380px; height: 100%; background: linear-gradient(180deg, rgba(10,25,47,0.98), rgba(17,34,64,0.98)); z-index: 200; transition: right 0.3s; overflow-y: auto; padding: 50px 15px 30px; }
+        .panel.open { right: 0; }
+        .panel-close { position: absolute; top: 12px; right: 15px; background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
+        .panel-title { font-size: 16px; color: var(--gold); margin-bottom: 15px; }
+
+        .item { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 6px; cursor: pointer; }
+        .item:active { background: rgba(255,255,255,0.1); }
+        .item .icon { font-size: 18px; }
+        .item .info { flex: 1; }
+        .item .name { font-size: 12px; }
+        .item .desc { font-size: 9px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+        .section-title { font-size: 12px; color: var(--gold); margin: 15px 0 8px; }
+        .divider { height: 1px; background: rgba(255,255,255,0.1); margin: 12px 0; }
+        .form-group { margin-bottom: 8px; }
+        .form-group label { display: block; font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 3px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; font-size: 12px; }
+        .btn { padding: 10px 16px; border: none; border-radius: 10px; font-size: 12px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #8338ec); color: white; }
+        .btn-gold { background: linear-gradient(135deg, var(--gold), #ff8c00); color: #000; }
+        .btn-outline { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-danger { background: var(--accent); color: white; }
+
+        .datetime-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+        .datetime-input { text-align: center; }
+        .datetime-input label { font-size: 9px; display: block; margin-bottom: 2px; }
+        .datetime-input input { text-align: center; padding: 6px 4px; font-size: 14px; font-weight: bold; }
+
+        .detail-time-box { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 12px; }
+        .detail-time-big { font-size: 20px; font-weight: bold; color: var(--gold); font-family: monospace; line-height: 1.5; }
+        .detail-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 11px; }
+
+        .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .theme-item { aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
+        .theme-item.active { border-color: white; }
+        .theme-item.classic { background: linear-gradient(135deg, #00d4ff, #8338ec); }
+        .theme-item.luxury { background: linear-gradient(135deg, #ffd700, #ff8c00); }
+        .theme-item.nature { background: linear-gradient(135deg, #06ffa5, #00d4ff); }
+        .theme-item.romantic { background: linear-gradient(135deg, #ff6b9d, #8338ec); }
+
+        .sound-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 5px; cursor: pointer; font-size: 11px; }
+        .sound-item.active { border-color: var(--gold); background: rgba(255,215,0,0.1); }
+
+        .ad-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+        .ad-card .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .ad-card .type-badge { font-size: 9px; padding: 2px 6px; border-radius: 8px; }
+        .ad-card .type-badge.text { background: #667eea; }
+        .ad-card .type-badge.image { background: #06ffa5; color: #000; }
+        .ad-card .type-badge.video { background: #ff006e; }
+        .ad-card .type-badge.link { background: #ffd700; color: #000; }
+        .ad-card .preview { font-size: 11px; color: rgba(255,255,255,0.7); word-break: break-all; }
+        .ad-card .preview img { max-width: 100%; max-height: 60px; border-radius: 6px; margin-top: 4px; }
+
+        .contact-auth-box { background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(131,56,236,0.1)); border: 1px solid rgba(0,212,255,0.3); border-radius: 14px; padding: 18px; text-align: center; margin-bottom: 12px; }
+        .contact-auth-box .icon { font-size: 36px; margin-bottom: 8px; }
+        .contact-auth-box .title { font-size: 13px; font-weight: bold; margin-bottom: 6px; }
+        .contact-auth-box .desc { font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 12px; line-height: 1.5; }
+
+        .contact-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 6px; }
+        .contact-item .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; }
+        .contact-item .info { flex: 1; }
+        .contact-item .name { font-size: 12px; font-weight: 500; }
+        .contact-item .phone { font-size: 9px; color: rgba(255,255,255,0.5); }
+        .contact-item .add-btn { padding: 5px 10px; background: var(--gold); border: none; border-radius: 12px; color: #000; font-size: 9px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .contact-item .add-btn:disabled { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); cursor: default; }
+        .contact-item.added .add-btn { background: rgba(6,255,165,0.3); color: var(--success); }
+
+        /* 管理员登录框 */
+        .admin-login-box { background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.3); border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+        .admin-login-box .title { font-size: 12px; color: var(--accent); margin-bottom: 10px; text-align: center; }
+        .admin-locked { text-align: center; padding: 20px; color: rgba(255,255,255,0.5); font-size: 11px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.92); z-index: 300; justify-content: center; align-items: center; padding: 20px; }
+        .modal.show { display: flex; }
+        .modal-box { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid var(--primary); border-radius: 16px; padding: 20px; max-width: 340px; width: 100%; max-height: 85vh; overflow-y: auto; }
+        .modal-title { font-size: 14px; color: var(--gold); margin-bottom: 12px; text-align: center; }
+        .toast { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.95); border: 1px solid var(--primary); padding: 10px 20px; border-radius: 20px; z-index: 1000; font-size: 12px; }
+
+        /* 水学面板样式 */
+        .water-tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+        .water-tab { padding: 6px 12px; background: rgba(0,0,0,0.2); border: 1px solid transparent; border-radius: 20px; font-size: 11px; color: rgba(255,255,255,0.7); cursor: pointer; white-space: nowrap; }
+        .water-tab.active { background: rgba(0,188,212,0.3); border-color: var(--water); color: var(--water); }
+        .water-lesson { background: rgba(0,188,212,0.08); border: 1px solid rgba(0,188,212,0.2); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+        .water-lesson .title { font-size: 13px; color: var(--gold); margin-bottom: 6px; font-weight: bold; }
+        .water-lesson .text { font-size: 12px; line-height: 1.8; color: rgba(255,255,255,0.85); }
+        .water-lesson .source { font-size: 9px; color: rgba(255,255,255,0.4); text-align: right; margin-top: 6px; }
+        .water-controls { display: flex; gap: 6px; margin-bottom: 14px; }
+        .water-controls button { flex: 1; padding: 8px; background: rgba(0,188,212,0.15); border: 1px solid rgba(0,188,212,0.3); border-radius: 8px; color: var(--water); font-size: 11px; cursor: pointer; }
+
+        /* 苏格拉底对话 */
+        .socratic-box { background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(0,188,212,0.08)); border: 2px solid rgba(255,215,0,0.3); border-radius: 14px; padding: 15px; margin-top: 10px; }
+        .socratic-title { font-size: 13px; color: var(--gold); font-weight: bold; margin-bottom: 10px; }
+        .socratic-chat { max-height: 300px; overflow-y: auto; margin-bottom: 10px; }
+        .chat-bubble { padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.7; animation: fadeIn 0.3s; }
+        .chat-bubble.master { background: rgba(0,188,212,0.15); border-left: 3px solid var(--water); margin-right: 30px; }
+        .chat-bubble.student { background: rgba(255,215,0,0.1); border-right: 3px solid var(--gold); margin-left: 30px; text-align: right; }
+        .chat-bubble .role { font-size: 9px; color: var(--gold); margin-bottom: 4px; font-weight: bold; }
+        .socratic-options { display: flex; flex-direction: column; gap: 6px; }
+        .socratic-opt { padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: white; font-size: 11px; cursor: pointer; text-align: left; transition: all 0.2s; }
+        .socratic-opt:hover { background: rgba(0,188,212,0.2); border-color: var(--water); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 语音浮球 */
+        .voice-fab { position: fixed; bottom: 80px; right: 15px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #8338ec); border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 200; cursor: pointer; box-shadow: 0 4px 20px rgba(0,212,255,0.4); transition: all 0.3s; }
+        .voice-fab.listening { animation: voicePulse 1s infinite; background: linear-gradient(135deg, #ff006e, #ff4444); box-shadow: 0 4px 30px rgba(255,0,110,0.6); }
+        .voice-fab .voice-label { position: absolute; bottom: -20px; font-size: 9px; white-space: nowrap; color: rgba(255,255,255,0.7); }
+        @keyframes voicePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .voice-status { position: fixed; bottom: 145px; right: 8px; background: rgba(0,0,0,0.9); border: 1px solid var(--primary); border-radius: 12px; padding: 8px 12px; font-size: 10px; max-width: 180px; z-index: 200; display: none; }
+        .voice-status.show { display: block; }
+
+        /* 💧 喝水提醒核心功能 */
+        .water-remind-box { background: linear-gradient(135deg, rgba(0,188,212,0.15), rgba(0,150,200,0.1)); border: 2px solid rgba(0,188,212,0.4); border-radius: 16px; padding: 15px; margin: 12px 0; }
+        .water-remind-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .water-title { font-size: 14px; font-weight: bold; color: var(--water); }
+        .water-goal { font-size: 11px; color: rgba(255,255,255,0.6); }
+        .water-progress-bar { height: 12px; background: rgba(0,0,0,0.3); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
+        .water-progress-fill { height: 100%; background: linear-gradient(90deg, #00bcd4, #00e5ff, #4dd0e1); border-radius: 6px; transition: width 0.5s ease; box-shadow: 0 0 10px rgba(0,188,212,0.5); }
+        .water-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .water-current { font-size: 24px; font-weight: bold; color: white; }
+        .water-current span { color: var(--water); }
+        .water-percent { font-size: 16px; color: var(--gold); font-weight: bold; }
+        .water-buttons { display: flex; gap: 8px; margin-bottom: 12px; }
+        .water-btn { border: none; border-radius: 20px; padding: 8px 12px; font-size: 11px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .water-btn.small { background: rgba(255,255,255,0.1); color: white; flex: 1; }
+        .water-btn.small:active { background: rgba(0,188,212,0.3); }
+        .water-btn.primary { background: linear-gradient(135deg, #00bcd4, #0097a7); color: white; flex: 2; }
+        .water-btn.primary:active { transform: scale(0.95); }
+        .water-schedule { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+        .schedule-item { font-size: 9px; padding: 4px 8px; background: rgba(255,255,255,0.08); border-radius: 12px; color: rgba(255,255,255,0.5); }
+        .schedule-item.done { background: rgba(6,255,165,0.2); color: var(--success); }
+        .schedule-item.active { background: rgba(0,188,212,0.3); color: var(--water); animation: pulse 1.5s infinite; border: 1px solid var(--water); }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        /* 会员体系样式 */
+        .membership-box { background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,140,0,0.1)); border: 2px solid rgba(255,215,0,0.3); border-radius: 16px; padding: 15px; margin: 10px 0; }
+        .membership-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .membership-level { font-size: 14px; font-weight: bold; }
+        .membership-level.free { color: rgba(255,255,255,0.6); }
+        .membership-level.vip { color: var(--gold); }
+        .membership-level.enterprise { color: #ff6b6b; }
+        .membership-limits { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 12px; line-height: 1.6; }
+        .membership-plans { display: flex; flex-direction: column; gap: 8px; }
+        .plan-btn { padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .plan-btn:hover { background: rgba(255,215,0,0.1); border-color: var(--gold); }
+        .plan-btn .plan-name { font-size: 12px; font-weight: bold; }
+        .plan-btn .plan-price { font-size: 14px; color: var(--gold); font-weight: bold; }
+        .plan-btn.recommended { background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,140,0,0.15)); border-color: var(--gold); }
+        .plan-btn.recommended::after { content: '推荐'; font-size: 9px; background: var(--gold); color: #000; padding: 2px 6px; border-radius: 8px; margin-left: 8px; }
+
+        /* PWA 安装提示样式 */
+        .pwa-banner { display: none; position: fixed; bottom: 55px; left: 8px; right: 8px; background: linear-gradient(135deg, var(--primary), #8338ec); padding: 12px; border-radius: 12px; z-index: 150; box-shadow: 0 4px 20px rgba(0,212,255,0.4); animation: pwaSlide 0.4s ease; }
+        .pwa-banner.show { display: block; }
+        @keyframes pwaSlide { from { transform: translateY(80px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .pwa-banner-inner { display: flex; align-items: center; gap: 10px; }
+        .pwa-banner-icon { font-size: 28px; }
+        .pwa-banner-text { flex: 1; }
+        .pwa-banner-title { font-size: 12px; font-weight: bold; }
+        .pwa-banner-desc { font-size: 10px; opacity: 0.85; margin-top: 2px; }
+        .pwa-banner-btn { background: white; color: #8338ec; border: none; padding: 8px 14px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .pwa-banner-close { position: absolute; top: 4px; right: 8px; background: none; border: none; color: white; font-size: 16px; cursor: pointer; opacity: 0.7; }
+        .pwa-guide { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 400; justify-content: center; align-items: center; padding: 15px; }
+        .pwa-guide.show { display: flex; }
+        .pwa-guide-box { background: linear-gradient(135deg, var(--bg1), var(--bg2)); border: 2px solid var(--primary); border-radius: 16px; padding: 20px; max-width: 320px; width: 100%; }
+        .pwa-guide-header { text-align: center; margin-bottom: 15px; }
+        .pwa-guide-header .icon { font-size: 40px; }
+        .pwa-guide-header .title { font-size: 16px; font-weight: bold; color: var(--gold); margin-top: 8px; }
+        .pwa-guide-header .desc { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+        .pwa-guide-steps { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+        .pwa-guide-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 11px; line-height: 1.5; }
+        .pwa-guide-step:last-child { border-bottom: none; }
+        .pwa-step-num { background: var(--primary); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; flex-shrink: 0; }
+        .pwa-guide-btn { width: 100%; padding: 10px; background: linear-gradient(135deg, var(--primary), #8338ec); border: none; border-radius: 20px; color: white; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .pwa-wechat-tip { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 10px; color: var(--gold); line-height: 1.5; display: none; }
+    </style>
+</head>
+<body>
+    <!-- PWA 安装提示 -->
+    <div class="pwa-banner" id="pwaBanner">
+        <button class="pwa-banner-close" onclick="closePwaBanner()">×</button>
+        <div class="pwa-banner-inner">
+            <div class="pwa-banner-icon">💧</div>
+            <div class="pwa-banner-text">
+                <div class="pwa-banner-title">添加到桌面</div>
+                <div class="pwa-banner-desc">像APP一样使用，一键打开</div>
+            </div>
+            <button class="pwa-banner-btn" onclick="handlePwaInstall()">添加</button>
+        </div>
+    </div>
+    <div class="pwa-guide" id="pwaGuide">
+        <div class="pwa-guide-box">
+            <div class="pwa-guide-header">
+                <div class="icon">📱</div>
+                <div class="title">添加到主屏幕</div>
+                <div class="desc">3步完成，像APP一样使用</div>
+            </div>
+            <div class="pwa-wechat-tip" id="pwaWechatTip">⚠️ 当前在微信内，请点击右上角 ··· 选择「在浏览器打开」</div>
+            <div class="pwa-guide-steps" id="pwaSteps"></div>
+            <button class="pwa-guide-btn" onclick="closePwaGuide()">我知道了</button>
+        </div>
+    </div>
+
+    <div class="top-bar">
+        <div class="logo">💧 <span data-i18n="appName">喝水了吗</span></div>
+        <div class="top-right">
+            <select class="lang-select" id="langSelect" onchange="changeLang(this.value)">
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+            </select>
+            <button class="top-btn" onclick="openPanel('promoPanel')" data-i18n="promo">推广</button>
+            <button class="top-btn" id="userBtn" onclick="openPanel('memberPanel')" data-i18n="login">登录</button>
+        </div>
+    </div>
+
+    <div class="ad-bar"><div class="ad-container" id="adContainer"></div></div>
+
+    <div class="main">
+        <div class="culture-card">
+            <div class="culture-bg" id="cultureBg"></div>
+            <div class="culture-content">
+                <div class="culture-label">💧 <span data-i18n="dailyWisdom">每日水语</span> · <span id="cultureDate"></span></div>
+                <div class="culture-text" id="cultureText"></div>
+                <div class="culture-source" id="cultureSource"></div>
+                <div class="culture-actions">
+                    <button class="culture-btn" onclick="copyCulture()" data-i18n="copy">复制</button>
+                    <button class="culture-btn" onclick="refreshCulture()" data-i18n="refresh">换一条</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkin-bar">
+            <div class="checkin-info">
+                <div class="checkin-streak"><span data-i18n="streak">连续</span> <strong id="streakDays">0</strong> <span data-i18n="days">天</span></div>
+                <div class="checkin-points"><span data-i18n="points">积分</span>: <span id="totalPoints">0</span></div>
+            </div>
+            <button class="checkin-btn" id="checkinBtn" onclick="doCheckin()">✅ <span data-i18n="checkin">打卡</span>+10</button>
+        </div>
+
+        <div class="clock-unit">
+            <div class="clock-area">
+                <div class="clock-face" id="clockFace">
+                    <div id="ticks"></div>
+                    <div class="clock-num n12">12</div>
+                    <div class="clock-num n3">3</div>
+                    <div class="clock-num n6">6</div>
+                    <div class="clock-num n9">9</div>
+                    <div class="clock-center" onclick="openPanel('centerPanel')">
+                        <div class="center-content" id="centerContent">
+                            <div class="center-placeholder" data-i18n="clickToAdd">点击添加<br>图片/视频/文字</div>
+                        </div>
+                    </div>
+                    <div class="hand hand-hour" id="hHour"></div>
+                    <div class="hand hand-minute" id="hMin"></div>
+                    <div class="hand hand-second" id="hSec"></div>
+                    <div class="hand-dot"></div>
+                </div>
+
+                <div class="digital-box">
+                    <div class="digital-time">
+                        <span id="dH">00</span><span class="colon">:</span><span id="dM">00</span><span class="colon">:</span><span id="dS">00</span>
+                    </div>
+                    <div class="digital-date" id="digitalDate"></div>
+                    <div class="slogan" data-i18n="slogan">「一万年太久，分秒必争」</div>
+                </div>
+
+                <div class="tick-bar" onclick="openPanel('settingsPanel')">
+                    <div class="tick-dot" id="tickDot"></div>
+                    <span style="font-size:11px;" data-i18n="tickSound">滴答声</span>
+                    <span style="font-size:10px;color:var(--gold);" id="tickSoundName">经典钟声</span>
+                </div>
+
+                <!-- 💧 喝水提醒核心功能区 -->
+                <div class="water-remind-box">
+                    <div class="water-remind-header">
+                        <span class="water-title">💧 今日饮水</span>
+                        <span class="water-goal" id="waterGoalText">目标 2000ml</span>
+                    </div>
+                    <div class="water-progress-bar">
+                        <div class="water-progress-fill" id="waterProgressFill" style="width:0%"></div>
+                    </div>
+                    <div class="water-stats">
+                        <span class="water-current"><span id="waterCurrent">0</span> ml</span>
+                        <span class="water-percent" id="waterPercent">0%</span>
+                    </div>
+                    <div class="water-buttons">
+                        <button class="water-btn small" onclick="drinkWater(100)">+100ml</button>
+                        <button class="water-btn small" onclick="drinkWater(200)">+200ml</button>
+                        <button class="water-btn primary" onclick="drinkWater(250)">🥤 喝一杯 250ml</button>
+                    </div>
+                    <div class="water-schedule" id="waterSchedule">
+                        <span class="schedule-item done">☀️ 7:00</span>
+                        <span class="schedule-item done">🌤️ 9:00</span>
+                        <span class="schedule-item active">☀️ 11:00</span>
+                        <span class="schedule-item">🍚 13:00</span>
+                        <span class="schedule-item">🌤️ 15:00</span>
+                        <span class="schedule-item">🌅 17:00</span>
+                        <span class="schedule-item">🌙 19:00</span>
+                        <span class="schedule-item">😴 21:00</span>
+                    </div>
+                </div>
+
+                <div class="func-row">
+                    <div class="func-btn" onclick="openPanel('classicsPanel')"><div class="icon">📖</div><div class="label" data-i18n="classics">经典</div></div>
+                    <div class="func-btn" onclick="openPanel('waterPanel')"><div class="icon">💧</div><div class="label" data-i18n="waterStudy">水学</div></div>
+                    <div class="func-btn voice" onclick="toggleVoice()"><div class="icon">🎤</div><div class="label" data-i18n="voice">语音</div></div>
+                    <div class="func-btn" onclick="openPanel('carePanel')"><div class="icon">💝</div><div class="label" data-i18n="care">关怀</div></div>
+                    <div class="func-btn" onclick="openPanel('settingsPanel')"><div class="icon">⚙️</div><div class="label" data-i18n="settings">设置</div></div>
+                </div>
+            </div>
+
+            <div class="remind-section">
+                <div class="remind-title">🔔 <span data-i18n="upcomingReminders">即将到来的提醒</span></div>
+                <div id="upcomingReminds"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <button class="nav-btn active"><span class="icon">🏠</span><span class="label" data-i18n="home">首页</span></button>
+        <button class="nav-btn" onclick="openPanel('promoPanel')"><span class="icon">📣</span><span class="label" data-i18n="promo">推广</span></button>
+        <button class="nav-btn" onclick="openPanel('settingsPanel')"><span class="icon">⏰</span><span class="label" data-i18n="remind">提醒</span></button>
+        <button class="nav-btn" onclick="openPanel('pointsPanel')"><span class="icon">🎁</span><span class="label" data-i18n="points">积分</span></button>
+        <button class="nav-btn" onclick="openPanel('memberPanel')"><span class="icon">👤</span><span class="label" data-i18n="me">我的</span></button>
+    </div>
+
+    <!-- 语音浮球「智回」 -->
+    <div class="voice-fab" id="voiceFab" onclick="toggleVoiceRecognition()">
+        🎤
+        <div class="voice-label">说「智回」</div>
+    </div>
+    <div class="voice-status" id="voiceStatus">🎤 等待唤醒词「智回」...</div>
+
+    <div class="panel-overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+    <!-- 设置面板 -->
+    <div class="panel" id="settingsPanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div class="panel-title">⚙️ <span data-i18n="settings">设置</span></div>
+
+        <div class="section-title">⏰ <span data-i18n="reminderManagement">提醒管理</span></div>
+        <button class="btn btn-gold" style="margin-bottom:10px;" onclick="openModal('addRemindModal')">➕ <span data-i18n="newReminder">新建提醒</span></button>
+        <div id="remindList"></div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">🔊 <span data-i18n="soundSettings">滴答声设置</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.05);border-radius:10px;margin-bottom:10px;">
+            <span style="font-size:12px;" data-i18n="tickSwitch">滴答声开关</span>
+            <div style="width:44px;height:24px;background:rgba(255,255,255,0.2);border-radius:12px;position:relative;cursor:pointer;" id="tickSwitch" onclick="toggleTick()">
+                <div style="width:20px;height:20px;background:white;border-radius:50%;position:absolute;top:2px;transition:0.3s;" id="tickKnob"></div>
+            </div>
+        </div>
+        <div id="soundList"></div>
+        <div class="section-title">🔈 <span data-i18n="volume">音量</span></div>
+        <input type="range" id="volumeSlider" min="0" max="100" value="50" style="width:100%;" onchange="setVolume(this.value)">
+
+        <div class="divider"></div>
+
+        <div class="section-title">🎨 <span data-i18n="theme">主题风格</span></div>
+        <div class="theme-grid">
+            <div class="theme-item classic active" onclick="setTheme('classic')"></div>
+            <div class="theme-item luxury" onclick="setTheme('luxury')"></div>
+            <div class="theme-item nature" onclick="setTheme('nature')"></div>
+            <div class="theme-item romantic" onclick="setTheme('romantic')"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 管理员广告设置 -->
+        <div class="section-title">📢 <span data-i18n="adManagement">广告管理</span> <span style="font-size:9px;color:var(--accent);">(管理员)</span></div>
+        
+        <div id="adminAdSection">
+            <div class="admin-login-box" id="adminLoginBox">
+                <div class="title">🔐 <span data-i18n="adminLogin">管理员登录</span></div>
+                <div class="form-group">
+                    <input type="password" id="adminPwd" placeholder="输入管理员密码">
+                </div>
+                <button class="btn btn-danger" onclick="adminLogin()" data-i18n="verify">验证</button>
+            </div>
+            
+            <div id="adminAdContent" style="display:none;">
+                <div id="adList"></div>
+                <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openModal('addAdModal')">➕ <span data-i18n="addAd">添加新广告</span></button>
+                <button class="btn btn-outline" onclick="adminLogout()" style="font-size:10px;" data-i18n="adminLogout">退出管理</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 钟表中心面板 -->
+    <div class="panel" id="centerPanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div class="panel-title">🎨 <span data-i18n="customizeCenter">自定义钟表中心</span></div>
+        
+        <div class="section-title">📷 <span data-i18n="uploadImage">上传图片</span></div>
+        <div style="border:2px dashed rgba(255,255,255,0.2);border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;" onclick="document.getElementById('imgUpload').click()">
+            <div style="font-size:28px;">🖼️</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.5);" data-i18n="clickUpload">点击上传</div>
+        </div>
+        <input type="file" id="imgUpload" accept="image/*" style="display:none" onchange="uploadImage(this)">
+
+        <div class="section-title">🎬 <span data-i18n="uploadVideo">上传视频</span></div>
+        <div style="border:2px dashed rgba(255,255,255,0.2);border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;" onclick="document.getElementById('vidUpload').click()">
+            <div style="font-size:28px;">🎬</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.5);" data-i18n="clickUpload">点击上传</div>
+        </div>
+        <input type="file" id="vidUpload" accept="video/*" style="display:none" onchange="uploadVideo(this)">
+
+        <div class="section-title">✍️ <span data-i18n="customText">自定义文字</span></div>
+        <div class="form-group"><textarea id="centerText" rows="3" placeholder="输入文字..."></textarea></div>
+        <button class="btn btn-primary" onclick="setCenterText()" data-i18n="apply">应用</button>
+        <div class="divider"></div>
+        <button class="btn btn-outline" onclick="resetCenter()" data-i18n="resetDefault">恢复默认</button>
+    </div>
+
+    <!-- 关怀面板 -->
+    <div class="panel" id="carePanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div class="panel-title">💝 <span data-i18n="smartCare">智能关怀</span></div>
+
+        <!-- 未授权时显示 -->
+        <div class="contact-auth-box" id="contactAuthBox">
+            <div class="icon">📱</div>
+            <div class="title" data-i18n="readContacts">读取通讯录</div>
+            <div class="desc" data-i18n="contactsDesc">授权后可快速查找并添加被关怀人，设置生日、纪念日等关怀提醒。</div>
+            <button class="btn btn-gold" onclick="requestContactsPermission()">📇 <span data-i18n="authorizeContacts">授权读取通讯录</span></button>
+        </div>
+
+        <!-- 已授权后显示搜索框+通讯录列表 -->
+        <div id="contactSearchBox" style="display:none;">
+            <div class="section-title">🔍 <span data-i18n="findCarePerson">查找被关怀人</span></div>
+            <div style="position:relative;margin-bottom:12px;">
+                <input type="text" id="careSearchInput" placeholder="输入姓名查找..." oninput="searchCarePerson(this.value)" style="width:100%;padding:12px 15px;padding-left:40px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:white;font-size:14px;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;">🔍</span>
+            </div>
+            <!-- 搜索结果 -->
+            <div id="searchResults" style="max-height:200px;overflow-y:auto;"></div>
+
+            <!-- 通讯录完整列表 -->
+            <div id="contactsDirectory">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px;">
+                    <span style="font-size:12px;color:var(--water);font-weight:bold;">📇 通讯录 (<span id="contactCount">0</span>人)</span>
+                    <div>
+                        <button onclick="refreshContacts()" style="background:none;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:3px 8px;font-size:9px;color:rgba(255,255,255,0.6);cursor:pointer;margin-right:4px;">🔄 刷新</button>
+                        <button onclick="resetContactsAuth()" style="background:none;border:1px solid rgba(255,100,100,0.3);border-radius:8px;padding:3px 8px;font-size:9px;color:rgba(255,100,100,0.6);cursor:pointer;">🗑️ 重置</button>
+                    </div>
+                </div>
+                <div id="contactsList" style="max-height:320px;overflow-y:auto;"></div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span class="section-title" style="margin:0">👥 <span data-i18n="addedFriends">已添加的关怀对象</span></span>
+            <button class="btn btn-primary" style="width:auto;padding:5px 10px;font-size:10px;" onclick="openModal('addFriendModal')">+ <span data-i18n="manualAdd">手动添加</span></button>
+        </div>
+        <div id="friendList"></div>
+    </div>
+
+    <!-- 经典面板（原经书，带二级目录） -->
+    <div class="panel" id="classicsPanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div class="panel-title">📖 <span data-i18n="classics">经典</span></div>
+
+        <div class="water-tabs" id="classicsTabs">
+            <div class="water-tab active" onclick="switchClassicsTab('scriptures')">📜 五经</div>
+            <div class="water-tab" onclick="switchClassicsTab('philosophy')">🎓 哲学</div>
+            <div class="water-tab" onclick="switchClassicsTab('poetry')">📝 诗词</div>
+            <div class="water-tab" onclick="switchClassicsTab('wisdom')">💡 智慧</div>
+        </div>
+
+        <div id="classicsContent"></div>
+    </div>
+
+    <div class="panel" id="waterPanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div class="panel-title">💧 <span data-i18n="waterCourse">水学课程</span></div>
+
+        <div class="water-tabs" id="waterTabs">
+            <div class="water-tab active" onclick="switchWaterTab('science')">🔬 水科学</div>
+            <div class="water-tab" onclick="switchWaterTab('philosophy')">☯️ 水哲学</div>
+            <div class="water-tab" onclick="switchWaterTab('health')">💊 水健康</div>
+            <div class="water-tab" onclick="switchWaterTab('socratic')">🏛️ 水问答</div>
+        </div>
+
+        <!-- 水学二级目录 -->
+        <div class="water-submenu" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;padding:10px;background:rgba(0,188,212,0.08);border-radius:12px;">
+            <div class="submenu-item" onclick="openWaterSection('institute')" style="flex:1;min-width:45%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(0,188,212,0.3);border-radius:10px;text-align:center;cursor:pointer;">
+                <div style="font-size:20px;margin-bottom:4px;">🏛️</div>
+                <div style="font-size:11px;font-weight:bold;color:var(--water);">水学研究院</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.5);">学术研究</div>
+            </div>
+            <div class="submenu-item" onclick="openWaterSection('tech')" style="flex:1;min-width:45%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(0,188,212,0.3);border-radius:10px;text-align:center;cursor:pointer;">
+                <div style="font-size:20px;margin-bottom:4px;">🔧</div>
+                <div style="font-size:11px;font-weight:bold;color:var(--water);">水科技</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.5);">科技创新</div>
+            </div>
+            <div class="submenu-item" onclick="openWaterSection('products')" style="flex:1;min-width:45%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(0,188,212,0.3);border-radius:10px;text-align:center;cursor:pointer;">
+                <div style="font-size:20px;margin-bottom:4px;">🛒</div>
+                <div style="font-size:11px;font-weight:bold;color:var(--water);">水产品</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.5);">健康好物</div>
+            </div>
+            <div class="submenu-item" onclick="openWaterSection('inventions')" style="flex:1;min-width:45%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(0,188,212,0.3);border-radius:10px;text-align:center;cursor:pointer;">
+                <div style="font-size:20px;margin-bottom:4px;">💡</div>
+                <div style="font-size:11px;font-weight:bold;color:var(--water);">水发明</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.5);">专利技术</div>
+            </div>
+        </div>
+            <div class="water-tab" onclick="switchWaterTab('health')">💊 水健康</div>
+            <div class="water-tab" onclick="switchWaterTab('socratic')">🏛️ 水问答</div>
+        </div>
+
+        <div id="waterLessonContent"></div>
+
+        <div class="water-controls">
+            <button onclick="prevWaterLesson()">⬅ 上一课</button>
+            <button onclick="speakWaterLesson()">🔊 朗读</button>
+            <button onclick="nextWaterLesson()">下一课 ➡</button>
+        </div>
+
+        <div id="socraticSection" style="display:none;">
+            <div class="socratic-box">
+                <div class="socratic-title">🏛️ 水的苏格拉底对话</div>
+                <div class="socratic-chat" id="socraticChat"></div>
+                <div class="socratic-options" id="socraticOptions"></div>
+            </div>
+        </div>
+
+        <div id="waterList" style="display:none;"></div>
+    </div>
+
+    <div class="panel" id="promoPanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div class="panel-title">📣 <span data-i18n="promoCenter">推广中心</span></div>
+        <div style="text-align:center;padding:20px;background:rgba(255,215,0,0.08);border-radius:14px;">
+            <div style="font-size:12px;" data-i18n="myInviteCode">我的邀请码</div>
+            <div style="font-size:20px;font-weight:bold;color:var(--gold);margin:10px 0;" id="inviteCode">--</div>
+            <div id="promoQR" style="background:white;padding:10px;border-radius:10px;display:inline-block;margin:10px 0;"></div>
+        </div>
+        <button class="btn btn-gold" style="margin-top:15px;" onclick="copyInviteLink()" data-i18n="copyInviteLink">复制邀请链接</button>
+    </div>
+
+    <div class="panel" id="pointsPanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div class="panel-title">🎁 <span data-i18n="pointsCenter">积分中心</span></div>
+        <div style="text-align:center;padding:20px;background:rgba(255,215,0,0.08);border-radius:14px;margin-bottom:15px;">
+            <div style="font-size:10px;color:rgba(255,255,255,0.6);" data-i18n="myPoints">我的积分</div>
+            <div style="font-size:32px;font-weight:bold;color:var(--gold);" id="myPoints">0</div>
+        </div>
+        <div class="section-title">📅 <span data-i18n="monthlyCheckin">本月打卡</span></div>
+        <div id="checkinCalendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;"></div>
+    </div>
+
+    <div class="panel" id="memberPanel">
+        <button class="panel-close" onclick="closeAllPanels()">×</button>
+        <div id="loginBox">
+            <div class="panel-title">🔐 <span data-i18n="loginRegister">登录 / 注册</span></div>
+            <div class="form-group"><label data-i18n="phone">手机号</label><input type="tel" id="phoneInput" placeholder="11位手机号"></div>
+            <div class="form-group"><label data-i18n="nickname">昵称</label><input type="text" id="nameInput" placeholder="您的昵称"></div>
+            <div class="form-group"><label data-i18n="password">密码</label><input type="password" id="pwdInput" placeholder="6位以上密码"></div>
+            <button class="btn btn-gold" onclick="doLogin()" data-i18n="loginRegister">登录 / 注册</button>
+        </div>
+        <div id="memberBox" style="display:none;">
+            <div style="text-align:center;padding:20px;background:rgba(255,215,0,0.08);border-radius:14px;margin-bottom:15px;">
+                <div style="font-size:36px;" id="avatar">👤</div>
+                <div style="font-size:16px;font-weight:bold;margin-top:8px;" id="userName">用户</div>
+                <div style="font-size:11px;color:var(--gold);margin-top:4px;" id="userLevel">免费用户</div>
+            </div>
+
+            <!-- 会员权益对比 -->
+            <div class="membership-box">
+                <div class="membership-header">
+                    <span class="membership-level" id="membershipTitle">🆓 免费用户</span>
+                    <span style="font-size:10px;color:rgba(255,255,255,0.5);">当前等级</span>
+                </div>
+                <div class="membership-limits" id="membershipLimits">
+                    • 提醒数量：每天10条<br>
+                    • 精确度：分钟级<br>
+                    • 关怀对象：3人<br>
+                    • 主题风格：2款<br>
+                    • 经典/水学：每日1篇<br>
+                    • 广告：有广告
+                </div>
+            </div>
+
+            <!-- 升级选项 -->
+            <div style="font-size:12px;font-weight:bold;color:var(--gold);margin:15px 0 10px;">👑 升级会员</div>
+            <div class="membership-plans">
+                <div class="plan-btn" onclick="upgradePlan('monthly')">
+                    <div>
+                        <div class="plan-name">月度会员</div>
+                        <div style="font-size:9px;color:rgba(255,255,255,0.5);">无限提醒 · 秒级精确</div>
+                    </div>
+                    <div class="plan-price">¥9.99/月</div>
+                </div>
+                <div class="plan-btn" onclick="upgradePlan('quarterly')">
+                    <div>
+                        <div class="plan-name">季度会员</div>
+                        <div style="font-size:9px;color:rgba(255,255,255,0.5);">省33% · 全部内容</div>
+                    </div>
+                    <div class="plan-price">¥19.99/季</div>
+                </div>
+                <div class="plan-btn recommended" onclick="upgradePlan('yearly')">
+                    <div>
+                        <div class="plan-name">年度VIP 🔥</div>
+                        <div style="font-size:9px;color:rgba(255,255,255,0.5);">省83% · 音频课程 · 无广告</div>
+                    </div>
+                    <div class="plan-price">¥199/年</div>
+                </div>
+                <div class="plan-btn" onclick="upgradePlan('enterprise')" style="border-color:rgba(255,107,107,0.5);">
+                    <div>
+                        <div class="plan-name" style="color:#ff6b6b;">🏢 企业版</div>
+                        <div style="font-size:9px;color:rgba(255,255,255,0.5);">品牌定制 · 分组管理 · 专属内容</div>
+                    </div>
+                    <div class="plan-price" style="color:#ff6b6b;">¥9999/年</div>
+                </div>
+            </div>
+
+            <button class="btn btn-outline" style="margin-top:15px;" onclick="logout()" data-i18n="logout">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="addRemindModal">
+        <div class="modal-box">
+            <div class="modal-title">⏰ <span data-i18n="newReminder">新建提醒</span></div>
+            <div class="form-group"><label data-i18n="title">标题</label><input type="text" id="rTitle" placeholder="如：吃药、开会"></div>
+            <div class="form-group"><label data-i18n="type">类型</label>
+                <select id="rType">
+                    <option value="💊">💊 吃药</option>
+                    <option value="🏥">🏥 就医</option>
+                    <option value="📅">📅 开会</option>
+                    <option value="🎂">🎂 生日</option>
+                    <option value="📞">📞 电话</option>
+                    <option value="🔔">🔔 其他</option>
+                </select>
+            </div>
+            <div class="section-title">📅 <span data-i18n="date">日期</span></div>
+            <div class="datetime-row">
+                <div class="datetime-input"><label data-i18n="year">年</label><input type="number" id="rYear"></div>
+                <div class="datetime-input"><label data-i18n="month">月</label><input type="number" id="rMonth" min="1" max="12"></div>
+                <div class="datetime-input"><label data-i18n="day">日</label><input type="number" id="rDay" min="1" max="31"></div>
+            </div>
+            <div class="section-title">⏰ <span data-i18n="time">时间</span></div>
+            <div class="datetime-row">
+                <div class="datetime-input"><label data-i18n="hour">时</label><input type="number" id="rHour" min="0" max="23"></div>
+                <div class="datetime-input"><label data-i18n="minute">分</label><input type="number" id="rMin" min="0" max="59"></div>
+                <div class="datetime-input"><label data-i18n="second">秒</label><input type="number" id="rSec" min="0" max="59"></div>
+            </div>
+            <div class="form-group"><label data-i18n="repeat">重复</label>
+                <select id="rRepeat"><option value="once">不重复</option><option value="daily">每天</option><option value="weekly">每周</option><option value="monthly">每月</option><option value="yearly">每年</option></select>
+            </div>
+            <div class="form-group"><label data-i18n="note">备注</label><textarea id="rNote" rows="2"></textarea></div>
+            <button class="btn btn-gold" onclick="addRemind()" data-i18n="save">保存</button>
+            <button class="btn btn-outline" style="margin-top:8px;" onclick="closeModal()" data-i18n="cancel">取消</button>
+        </div>
+    </div>
+
+    <div class="modal" id="remindDetailModal">
+        <div class="modal-box">
+            <div class="modal-title" id="detailTitle">⏰ 提醒详情</div>
+            <div id="detailContent"></div>
+            <button class="btn btn-primary" onclick="closeModal()" data-i18n="close">关闭</button>
+        </div>
+    </div>
+
+    <div class="modal" id="addAdModal">
+        <div class="modal-box">
+            <div class="modal-title">📢 <span data-i18n="addAd">添加广告</span></div>
+            <div class="form-group"><label data-i18n="adType">广告类型</label>
+                <select id="adType" onchange="updateAdForm()">
+                    <option value="text">📝 文字</option>
+                    <option value="image">🖼️ 图片</option>
+                    <option value="video">🎬 视频</option>
+                    <option value="link">🔗 链接</option>
+                </select>
+            </div>
+            <div id="adFormText"><div class="form-group"><label>文字内容</label><textarea id="adText" rows="2"></textarea></div></div>
+            <div id="adFormImage" style="display:none;"><div class="form-group"><label>图片URL</label><input type="text" id="adImageUrl"></div></div>
+            <div id="adFormVideo" style="display:none;"><div class="form-group"><label>视频URL</label><input type="text" id="adVideoUrl"></div></div>
+            <div id="adFormLink" style="display:none;">
+                <div class="form-group"><label>链接标题</label><input type="text" id="adLinkTitle"></div>
+                <div class="form-group"><label>链接地址</label><input type="text" id="adLinkUrl"></div>
+            </div>
+            <button class="btn btn-gold" onclick="addAd()" data-i18n="add">添加</button>
+            <button class="btn btn-outline" style="margin-top:8px;" onclick="closeModal()" data-i18n="cancel">取消</button>
+        </div>
+    </div>
+
+    <!-- 关怀提醒设置弹窗 -->
+    <div class="modal" id="careRemindModal">
+        <div class="modal-box">
+            <div class="modal-title">💝 设置关怀提醒</div>
+            
+            <div style="text-align:center;padding:15px;background:rgba(0,212,255,0.1);border-radius:12px;margin-bottom:15px;">
+                <div style="width:60px;height:60px;border-radius:50%;background:var(--primary);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;" id="carePersonAvatar">张</div>
+                <div style="font-size:16px;font-weight:bold;" id="carePersonName">张三</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.5);" id="carePersonPhone">138****1234</div>
+            </div>
+
+            <div class="form-group">
+                <label>提醒类型</label>
+                <select id="careType" style="width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;">
+                    <option value="🎂 生日">🎂 生日提醒</option>
+                    <option value="💑 纪念日">💑 纪念日提醒</option>
+                    <option value="💊 吃药">💊 吃药提醒</option>
+                    <option value="🏥 体检">🏥 体检提醒</option>
+                    <option value="📞 电话">📞 定期电话</option>
+                    <option value="🏠 探望">🏠 探望提醒</option>
+                    <option value="💝 关怀">💝 其他关怀</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>提醒日期</label>
+                <div style="display:flex;gap:8px;">
+                    <select id="careYear" style="flex:1;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;"></select>
+                    <select id="careMonth" style="flex:1;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;"></select>
+                    <select id="careDay" style="flex:1;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>提醒时间</label>
+                <div style="display:flex;gap:8px;">
+                    <select id="careHour" style="flex:1;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;"></select>
+                    <select id="careMinute" style="flex:1;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>重复</label>
+                <select id="careRepeat" style="width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;">
+                    <option value="none">不重复</option>
+                    <option value="yearly" selected>每年重复</option>
+                    <option value="monthly">每月重复</option>
+                    <option value="weekly">每周重复</option>
+                    <option value="daily">每天重复</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>备注（选填）</label>
+                <input type="text" id="careNote" placeholder="如：记得买蛋糕" style="width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:13px;">
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:15px;">
+                <button class="btn btn-outline" onclick="closeModal()" style="flex:1;">取消</button>
+                <button class="btn btn-gold" onclick="saveCareRemind()" style="flex:1;">✅ 确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addFriendModal">
+        <div class="modal-box">
+            <div class="modal-title">👤 <span data-i18n="addFriend">添加好友</span></div>
+            <div class="form-group"><label data-i18n="name">姓名</label><input type="text" id="fName"></div>
+            <div class="form-group"><label data-i18n="phone">手机号</label><input type="tel" id="fPhone"></div>
+            <div class="form-group"><label data-i18n="relation">关系</label><select id="fRelation"><option>家人</option><option>朋友</option><option>同事</option></select></div>
+            <button class="btn btn-primary" onclick="addFriend()" data-i18n="save">保存</button>
+            <button class="btn btn-outline" style="margin-top:8px;" onclick="closeModal()" data-i18n="cancel">取消</button>
+        </div>
+    </div>
+
+    <script>
+    // ==================== PWA 安装逻辑 ====================
+    let pwaPrompt = null;
+    const pwaInfo = {
+        isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+        isAndroid: /Android/.test(navigator.userAgent),
+        isWechat: /MicroMessenger/.test(navigator.userAgent),
+        isStandalone: window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
+    };
+
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pwaPrompt = e; if (!pwaInfo.isStandalone && !localStorage.getItem('pwaDismissed')) setTimeout(showPwaBanner, 5000); });
+    window.addEventListener('appinstalled', () => { closePwaBanner(); toast('🎉 已添加到桌面！'); });
+
+    function showPwaBanner() { if (pwaInfo.isStandalone) return; document.getElementById('pwaBanner').classList.add('show'); }
+    function closePwaBanner() { document.getElementById('pwaBanner').classList.remove('show'); localStorage.setItem('pwaDismissed', '1'); }
+    function handlePwaInstall() {
+        if (pwaInfo.isWechat) { showPwaGuide('wechat'); }
+        else if (pwaInfo.isIOS) { showPwaGuide('ios'); }
+        else if (pwaPrompt) { pwaPrompt.prompt(); pwaPrompt.userChoice.then(() => { pwaPrompt = null; closePwaBanner(); }); }
+        else { showPwaGuide('android'); }
+    }
+    function showPwaGuide(type) {
+        const steps = document.getElementById('pwaSteps');
+        const tip = document.getElementById('pwaWechatTip');
+        tip.style.display = type === 'wechat' ? 'block' : 'none';
+        if (type === 'wechat') steps.innerHTML = '<div class="pwa-guide-step"><div class="pwa-step-num">1</div><div>点击右上角 <b>···</b></div></div><div class="pwa-guide-step"><div class="pwa-step-num">2</div><div>选择「在浏览器打开」</div></div><div class="pwa-guide-step"><div class="pwa-step-num">3</div><div>再次点击「添加到桌面」</div></div>';
+        else if (type === 'ios') steps.innerHTML = '<div class="pwa-guide-step"><div class="pwa-step-num">1</div><div>点击底部 <b>分享按钮</b> ⬆️</div></div><div class="pwa-guide-step"><div class="pwa-step-num">2</div><div>向上滑动，找到「添加到主屏幕」</div></div><div class="pwa-guide-step"><div class="pwa-step-num">3</div><div>点击右上角「添加」</div></div>';
+        else steps.innerHTML = '<div class="pwa-guide-step"><div class="pwa-step-num">1</div><div>点击浏览器 <b>菜单</b>（⋮ 或 ···）</div></div><div class="pwa-guide-step"><div class="pwa-step-num">2</div><div>找到「添加到主屏幕」或「安装」</div></div><div class="pwa-guide-step"><div class="pwa-step-num">3</div><div>点击「添加」确认</div></div>';
+        document.getElementById('pwaGuide').classList.add('show'); closePwaBanner();
+    }
+    function closePwaGuide() { document.getElementById('pwaGuide').classList.remove('show'); }
+    window.addEventListener('load', () => { if (!pwaInfo.isStandalone && !localStorage.getItem('pwaDismissed')) { if (pwaInfo.isIOS || pwaInfo.isWechat) setTimeout(showPwaBanner, 5000); } });
+
+    // ==================== 多语言系统 ====================
+    const I18N = {
+        zh: {
+            appName: '喝水了吗', slogan: '「一万年太久，分秒必争」', login: '登录', promo: '推广',
+            dailyWisdom: '每日水语', copy: '复制', refresh: '换一条', streak: '连续', days: '天', points: '积分', checkin: '打卡',
+            clickToAdd: '点击添加<br>图片/视频/文字', tickSound: '滴答声', classics: '经典', waterStudy: '水学', voice: '语音', care: '关怀', settings: '设置',
+            drinkWater: '喝水提醒', drinkNow: '立即喝水', todayWater: '今日饮水', waterGoal: '目标2000ml',
+            upcomingReminders: '即将到来的提醒', home: '首页', remind: '提醒', me: '我的',
+            reminderManagement: '提醒管理', newReminder: '新建提醒', soundSettings: '滴答声设置', tickSwitch: '滴答声开关', volume: '音量', theme: '主题风格',
+            adManagement: '广告管理', adminLogin: '管理员登录', verify: '验证', adminLogout: '退出管理', addAd: '添加新广告',
+            customizeCenter: '自定义钟表中心', uploadImage: '上传图片', uploadVideo: '上传视频', customText: '自定义文字', clickUpload: '点击上传', apply: '应用', resetDefault: '恢复默认',
+            smartCare: '智能关怀', readContacts: '读取通讯录', contactsDesc: '授权后可快速查找并添加被关怀人，设置生日、纪念日等关怀提醒。', authorizeContacts: '授权读取通讯录',
+            findCarePerson: '查找被关怀人', addedFriends: '已添加的关怀对象', manualAdd: '手动添加',
+            classics: '经典', fiveScriptures: '五经', waterCourse: '水学课程', socraticDialog: '苏格拉底式水学对话', promoCenter: '推广中心', myInviteCode: '我的邀请码', copyInviteLink: '复制邀请链接',
+            pointsCenter: '积分中心', myPoints: '我的积分', monthlyCheckin: '本月打卡',
+            loginRegister: '登录 / 注册', phone: '手机号', nickname: '昵称', password: '密码', upgradeVip: '升级VIP', logout: '退出登录',
+            title: '标题', type: '类型', date: '日期', time: '时间', year: '年', month: '月', day: '日', hour: '时', minute: '分', second: '秒',
+            repeat: '重复', note: '备注', save: '保存', cancel: '取消', close: '关闭', add: '添加', name: '姓名', relation: '关系', adType: '广告类型',
+            sunday: '日', monday: '一', tuesday: '二', wednesday: '三', thursday: '四', friday: '五', saturday: '六'
+        },
+        en: {
+            appName: 'DrinkWater', slogan: '"Seize every second"', login: 'Login', promo: 'Promo',
+            dailyWisdom: 'Daily Wisdom', copy: 'Copy', refresh: 'Refresh', streak: 'Streak', days: 'days', points: 'Points', checkin: 'Check-in',
+            clickToAdd: 'Click to add<br>Image/Video/Text', tickSound: 'Tick Sound', classics: 'Classics', waterStudy: 'Water Study', voice: 'Voice', care: 'Care', settings: 'Settings',
+            upcomingReminders: 'Upcoming Reminders', home: 'Home', remind: 'Remind', me: 'Me',
+            reminderManagement: 'Reminder Management', newReminder: 'New Reminder', soundSettings: 'Sound Settings', tickSwitch: 'Tick Switch', volume: 'Volume', theme: 'Theme',
+            adManagement: 'Ad Management', adminLogin: 'Admin Login', verify: 'Verify', adminLogout: 'Logout Admin', addAd: 'Add New Ad',
+            customizeCenter: 'Customize Clock Center', uploadImage: 'Upload Image', uploadVideo: 'Upload Video', customText: 'Custom Text', clickUpload: 'Click to upload', apply: 'Apply', resetDefault: 'Reset',
+            smartCare: 'Smart Care', readContacts: 'Read Contacts', contactsDesc: 'After authorization, you can quickly find and add care recipients for birthday and anniversary reminders.', authorizeContacts: 'Authorize Contacts',
+            findCarePerson: 'Find Care Recipient', addedFriends: 'Added Care Recipients', manualAdd: 'Manual Add',
+            classics: 'Classics', fiveScriptures: 'Five Scriptures', waterCourse: 'Water Course', socraticDialog: 'Socratic Water Dialogue', promoCenter: 'Promo Center', myInviteCode: 'My Invite Code', copyInviteLink: 'Copy Invite Link',
+            pointsCenter: 'Points Center', myPoints: 'My Points', monthlyCheckin: 'Monthly Check-in',
+            loginRegister: 'Login / Register', phone: 'Phone', nickname: 'Nickname', password: 'Password', upgradeVip: 'Upgrade VIP', logout: 'Logout',
+            title: 'Title', type: 'Type', date: 'Date', time: 'Time', year: 'Year', month: 'Month', day: 'Day', hour: 'Hour', minute: 'Min', second: 'Sec',
+            repeat: 'Repeat', note: 'Note', save: 'Save', cancel: 'Cancel', close: 'Close', add: 'Add', name: 'Name', relation: 'Relation', adType: 'Ad Type',
+            sunday: 'Sun', monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat'
+        },
+        ja: {
+            appName: '水飲んだ？', slogan: '「一秒も無駄にしない」', login: 'ログイン', promo: 'プロモ',
+            dailyWisdom: '今日の言葉', copy: 'コピー', refresh: '更新', streak: '連続', days: '日', points: 'ポイント', checkin: 'チェックイン',
+            clickToAdd: 'クリックして追加<br>画像/動画/テキスト', tickSound: 'チクタク音', classics: '経典', waterStudy: '水学', voice: '音声', care: 'ケア', settings: '設定',
+            upcomingReminders: '予定のリマインダー', home: 'ホーム', remind: 'リマインド', me: 'マイページ',
+            reminderManagement: 'リマインダー管理', newReminder: '新規作成', soundSettings: 'サウンド設定', tickSwitch: 'チクタク音', volume: '音量', theme: 'テーマ',
+            adManagement: '広告管理', adminLogin: '管理者ログイン', verify: '確認', adminLogout: 'ログアウト', addAd: '広告追加',
+            customizeCenter: '時計中央カスタマイズ', uploadImage: '画像アップロード', uploadVideo: '動画アップロード', customText: 'カスタムテキスト', clickUpload: 'クリックしてアップロード', apply: '適用', resetDefault: 'リセット',
+            smartCare: 'スマートケア', readContacts: '連絡先を読み込む', contactsDesc: '許可後、ケア対象者を素早く検索・追加できます。', authorizeContacts: '連絡先を許可',
+            findCarePerson: 'ケア対象者を検索', addedFriends: '追加済みのケア対象者', manualAdd: '手動追加',
+            classics: '経典', fiveScriptures: '五つの経典', waterCourse: '水学コース', socraticDialog: 'ソクラテス式水学対話', promoCenter: 'プロモセンター', myInviteCode: '招待コード', copyInviteLink: '招待リンクをコピー',
+            pointsCenter: 'ポイントセンター', myPoints: 'マイポイント', monthlyCheckin: '今月のチェックイン',
+            loginRegister: 'ログイン/登録', phone: '電話番号', nickname: 'ニックネーム', password: 'パスワード', upgradeVip: 'VIPアップグレード', logout: 'ログアウト',
+            title: 'タイトル', type: 'タイプ', date: '日付', time: '時間', year: '年', month: '月', day: '日', hour: '時', minute: '分', second: '秒',
+            repeat: '繰り返し', note: 'メモ', save: '保存', cancel: 'キャンセル', close: '閉じる', add: '追加', name: '名前', relation: '関係', adType: '広告タイプ',
+            sunday: '日', monday: '月', tuesday: '火', wednesday: '水', thursday: '木', friday: '金', saturday: '土'
+        },
+        ko: {
+            appName: '물 마셨어?', slogan: '「1초도 아깝다」', login: '로그인', promo: '프로모션',
+            dailyWisdom: '오늘의 명언', copy: '복사', refresh: '새로고침', streak: '연속', days: '일', points: '포인트', checkin: '체크인',
+            clickToAdd: '클릭하여 추가<br>이미지/비디오/텍스트', tickSound: '틱톡 소리', classics: '고전', scriptures: '경전', waterStudy: '물 학습', voice: '음성', care: '케어', settings: '설정',
+            upcomingReminders: '예정된 알림', home: '홈', remind: '알림', me: '내 정보',
+            reminderManagement: '알림 관리', newReminder: '새 알림', soundSettings: '소리 설정', tickSwitch: '틱톡 소리', volume: '볼륨', theme: '테마',
+            adManagement: '광고 관리', adminLogin: '관리자 로그인', verify: '확인', adminLogout: '로그아웃', addAd: '광고 추가',
+            customizeCenter: '시계 중앙 커스터마이즈', uploadImage: '이미지 업로드', uploadVideo: '비디오 업로드', customText: '커스텀 텍스트', clickUpload: '클릭하여 업로드', apply: '적용', resetDefault: '초기화',
+            smartCare: '스마트 케어', readContacts: '연락처 읽기', contactsDesc: '허용 후 케어 대상자를 빠르게 검색하고 추가할 수 있습니다.', authorizeContacts: '연락처 허용',
+            findCarePerson: '케어 대상자 찾기', addedFriends: '추가된 케어 대상자', manualAdd: '수동 추가',
+            classics: '고전', fiveScriptures: '다섯 경전', waterCourse: '물 코스', socraticDialog: '소크라테스식 물 대화', promoCenter: '프로모션 센터', myInviteCode: '초대 코드', copyInviteLink: '초대 링크 복사',
+            pointsCenter: '포인트 센터', myPoints: '내 포인트', monthlyCheckin: '이번 달 체크인',
+            loginRegister: '로그인/가입', phone: '전화번호', nickname: '닉네임', password: '비밀번호', upgradeVip: 'VIP 업그레이드', logout: '로그아웃',
+            title: '제목', type: '유형', date: '날짜', time: '시간', year: '년', month: '월', day: '일', hour: '시', minute: '분', second: '초',
+            repeat: '반복', note: '메모', save: '저장', cancel: '취소', close: '닫기', add: '추가', name: '이름', relation: '관계', adType: '광고 유형',
+            sunday: '일', monday: '월', tuesday: '화', wednesday: '수', thursday: '목', friday: '금', saturday: '토'
+        }
+    };
+
+    let currentLang = 'zh';
+
+    function changeLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('heshuileLang', lang);
+        applyI18n();
+        updateClock();
+        renderAll();
+    }
+
+    function applyI18n() {
+        const texts = I18N[currentLang] || I18N.zh;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (texts[key]) el.innerHTML = texts[key];
+        });
+        document.title = texts.appName + ' | ' + (currentLang === 'zh' ? '分秒必争' : 'Seize every second');
+    }
+
+    // ==================== 管理员系统 ====================
+    const ADMIN_PASSWORD = 'Fndlogo8888';
+    let isAdminLoggedIn = false;
+
+    function adminLogin() {
+        const pwd = document.getElementById('adminPwd').value;
+        if (pwd === ADMIN_PASSWORD) {
+            isAdminLoggedIn = true;
+            document.getElementById('adminLoginBox').style.display = 'none';
+            document.getElementById('adminAdContent').style.display = 'block';
+            renderAdList();
+            toast('✅ 管理员验证成功');
+        } else {
+            toast('❌ 密码错误');
+        }
+    }
+
+    function adminLogout() {
+        isAdminLoggedIn = false;
+        document.getElementById('adminLoginBox').style.display = 'block';
+        document.getElementById('adminAdContent').style.display = 'none';
+        document.getElementById('adminPwd').value = '';
+        toast('已退出管理');
+    }
+
+    // ==================== 数据和状态 ====================
+    const SOUNDS = [
+        { id: 'classic', name: '🕐 经典钟声', freq: 1000 },
+        { id: 'soft', name: '💧 轻柔水滴', freq: 800 },
+        { id: 'wood', name: '🪵 木鱼敲击', freq: 400 },
+        { id: 'bell', name: '🔔 风铃摇曳', freq: 1200 }
+    ];
+
+    const THEMES = {
+        classic: { primary: '#00d4ff', bg1: '#0a192f', bg2: '#112240' },
+        luxury: { primary: '#ffd700', bg1: '#1a1a0a', bg2: '#2d2a10' },
+        nature: { primary: '#06ffa5', bg1: '#0a1f1a', bg2: '#102f25' },
+        romantic: { primary: '#ff6b9d', bg1: '#1f0a1a', bg2: '#2f1025' }
+    };
+
+    const QUOTES = {
+        zh: [{ text: '别小看平淡，平淡才是大多数生命的真相。', source: '第1章' }, { text: '一万年太久，分秒必争。', source: '提醒' }],
+        en: [{ text: "Don't underestimate simplicity, it's the truth of most lives.", source: 'Ch.1' }, { text: 'Seize every second.', source: 'Reminder' }],
+        ja: [{ text: '平凡を軽んじるな、それが人生の真実。', source: '第1章' }, { text: '一秒も無駄にしない。', source: 'リマインダー' }],
+        ko: [{ text: '평범함을 얕보지 마라, 그것이 삶의 진실이다.', source: '제1장' }, { text: '1초도 아깝다.', source: '알림' }]
+    };
+
+    const books = [
+        { name: { zh: '道德经', en: 'Tao Te Ching', ja: '道徳経', ko: '도덕경' }, icon: '☯️', text: { zh: '道可道，非常道。', en: 'The Tao that can be told is not the eternal Tao.', ja: '道の道とすべきは常の道に非ず。', ko: '도가도비상도' }},
+        { name: { zh: '心经', en: 'Heart Sutra', ja: '般若心経', ko: '반야심경' }, icon: '🙏', text: { zh: '观自在菩萨', en: 'Avalokitesvara Bodhisattva', ja: '観自在菩薩', ko: '관자재보살' }},
+        { name: { zh: '易经', en: 'I Ching', ja: '易経', ko: '주역' }, icon: '☰', text: { zh: '天行健，君子以自强不息。', en: 'Heaven moves with vigor.', ja: '天行健なり。', ko: '천행건' }},
+        { name: { zh: '古兰经', en: 'Quran', ja: 'コーラン', ko: '코란' }, icon: '☪️', text: { zh: '奉至仁至慈的真主之名。', en: 'In the name of Allah.', ja: 'アッラーの御名において。', ko: '알라의 이름으로' }},
+        { name: { zh: '圣经', en: 'Bible', ja: '聖書', ko: '성경' }, icon: '✝️', text: { zh: '起初，神创造天地。', en: 'In the beginning God created the heavens and the earth.', ja: '初めに神は天と地を創造された。', ko: '태초에 하나님이 천지를 창조하시니라' }}
+    ];
+
+    let tickOn = true, user = null, audioCtx = null;
+    let currentTheme = 'classic', currentSound = 'classic', volume = 50;
+    let friends = [], ads = [{ type: 'text', content: '提醒 - 一万年太久，分秒必争' }];
+    let reminds = [], contacts = [];
+    let checkinData = { streak: 0, lastDate: '', history: [], points: 0 };
+    let waterData = { today: 0, goal: 2000, history: [], schedule: ['7:00','9:00','11:00','13:00','15:00','17:00','19:00','21:00'] };
+    let centerData = { type: 'default', content: '' };
+    let contactsAuthorized = false;
+    let currentQuoteIdx = 0;
+
+    // ==================== 初始化 ====================
+    window.onload = function() {
+        currentLang = localStorage.getItem('heshuileLang') || 'zh';
+        document.getElementById('langSelect').value = currentLang;
+        loadData();
+        initTicks();
+        initAudio();
+        applyI18n();
+        renderAll();
+        updateUI();
+        updateDailyCulture();
+        updateCheckinUI();
+        applyTheme(currentTheme);
+        updateTickSwitch();
+        renderAds();
+        setDefaultDateTime();
+        renderCenter();
+        updateContactsUI();
+        updateClock();
+        setInterval(updateClock, 1000);
+        setInterval(checkReminders, 1000);
+        initVoiceSystem();
+        // 启动时语音问候
+        setTimeout(() => { speak('欢迎使用喝水了吗，说智回唤醒语音助手'); }, 1500);
+    };
+
+    function initTicks() {
+        const c = document.getElementById('ticks');
+        for (let i = 0; i < 60; i++) {
+            const t = document.createElement('div');
+            t.className = 'tick' + (i % 5 === 0 ? ' major' : '');
+            t.style.transform = `rotate(${i * 6}deg)`;
+            c.appendChild(t);
+        }
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+        document.getElementById('hHour').style.transform = `rotate(${(h % 12) * 30 + m * 0.5}deg)`;
+        document.getElementById('hMin').style.transform = `rotate(${m * 6 + s * 0.1}deg)`;
+        document.getElementById('hSec').style.transform = `rotate(${s * 6}deg)`;
+        document.getElementById('dH').textContent = String(h).padStart(2, '0');
+        document.getElementById('dM').textContent = String(m).padStart(2, '0');
+        document.getElementById('dS').textContent = String(s).padStart(2, '0');
+        
+        const texts = I18N[currentLang];
+        const days = [texts.sunday, texts.monday, texts.tuesday, texts.wednesday, texts.thursday, texts.friday, texts.saturday];
+        if (currentLang === 'zh') {
+            document.getElementById('digitalDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${days[now.getDay()]}`;
+        } else if (currentLang === 'ja') {
+            document.getElementById('digitalDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 (${days[now.getDay()]})`;
+        } else {
+            document.getElementById('digitalDate').textContent = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${days[now.getDay()]}`;
+        }
+        if (tickOn) playTick();
+    }
+
+    function initAudio() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        document.addEventListener('click', () => { if (audioCtx?.state === 'suspended') audioCtx.resume(); }, { once: true });
+    }
+
+    function playTick() {
+        if (!audioCtx) return;
+        const sound = SOUNDS.find(s => s.id === currentSound) || SOUNDS[0];
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.frequency.value = sound.freq;
+        g.gain.setValueAtTime(volume / 100 * 0.1, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + 0.05);
+    }
+
+    function toggleTick() { tickOn = !tickOn; updateTickSwitch(); saveData(); toast(tickOn ? '🔊' : '🔇'); }
+    function updateTickSwitch() {
+        document.getElementById('tickSwitch').style.background = tickOn ? 'var(--primary)' : 'rgba(255,255,255,0.2)';
+        document.getElementById('tickKnob').style.left = tickOn ? '22px' : '2px';
+        document.getElementById('tickDot').className = 'tick-dot' + (tickOn ? '' : ' off');
+    }
+
+    // 钟表中心
+    function uploadImage(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { centerData = { type: 'image', content: e.target.result }; renderCenter(); saveData(); closeAllPanels(); toast('🖼️'); }; reader.readAsDataURL(input.files[0]); } }
+    function uploadVideo(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { centerData = { type: 'video', content: e.target.result }; renderCenter(); saveData(); closeAllPanels(); toast('🎬'); }; reader.readAsDataURL(input.files[0]); } }
+    function setCenterText() { const text = document.getElementById('centerText').value.trim(); if (!text) return toast('!'); centerData = { type: 'text', content: text }; renderCenter(); saveData(); closeAllPanels(); toast('✍️'); }
+    function resetCenter() { centerData = { type: 'default', content: '' }; renderCenter(); saveData(); toast('✓'); }
+    function renderCenter() {
+        const c = document.getElementById('centerContent');
+        if (centerData.type === 'image') c.innerHTML = `<img src="${centerData.content}">`;
+        else if (centerData.type === 'video') c.innerHTML = `<video src="${centerData.content}" autoplay loop muted playsinline></video>`;
+        else if (centerData.type === 'text') c.innerHTML = `<div class="center-text">${centerData.content}</div>`;
+        else c.innerHTML = `<div class="center-placeholder">${I18N[currentLang].clickToAdd}</div>`;
+    }
+
+    // 广告
+    function updateAdForm() {
+        const type = document.getElementById('adType').value;
+        document.getElementById('adFormText').style.display = type === 'text' ? 'block' : 'none';
+        document.getElementById('adFormImage').style.display = type === 'image' ? 'block' : 'none';
+        document.getElementById('adFormVideo').style.display = type === 'video' ? 'block' : 'none';
+        document.getElementById('adFormLink').style.display = type === 'link' ? 'block' : 'none';
+    }
+
+    function addAd() {
+        if (!isAdminLoggedIn) return toast('❌');
+        const type = document.getElementById('adType').value;
+        let ad = { type };
+        if (type === 'text') { ad.content = document.getElementById('adText').value.trim(); if (!ad.content) return toast('!'); }
+        else if (type === 'image') { ad.content = document.getElementById('adImageUrl').value.trim(); if (!ad.content) return toast('!'); }
+        else if (type === 'video') { ad.content = document.getElementById('adVideoUrl').value.trim(); if (!ad.content) return toast('!'); }
+        else if (type === 'link') { ad.title = document.getElementById('adLinkTitle').value.trim(); ad.url = document.getElementById('adLinkUrl').value.trim(); if (!ad.title || !ad.url) return toast('!'); }
+        ads.push(ad); saveData(); renderAds(); renderAdList(); closeModal(); toast('✅');
+    }
+
+    function deleteAd(idx) { if (!isAdminLoggedIn) return; ads.splice(idx, 1); if (ads.length === 0) ads.push({ type: 'text', content: '提醒' }); saveData(); renderAds(); renderAdList(); }
+
+    function renderAds() {
+        const container = document.getElementById('adContainer');
+        container.innerHTML = ads.map(ad => {
+            if (ad.type === 'text') return `<div class="ad-item text">✨ ${ad.content} ✨</div>`;
+            if (ad.type === 'image') return `<div class="ad-item image"><img src="${ad.content}"></div>`;
+            if (ad.type === 'video') return `<div class="ad-item video"><video src="${ad.content}" autoplay loop muted></video></div>`;
+            if (ad.type === 'link') return `<div class="ad-item link" onclick="window.open('${ad.url}')">🔗 ${ad.title}</div>`;
+            return '';
+        }).join('');
+        container.style.animation = `scrollAds ${Math.max(ads.length * 5, 10)}s linear infinite`;
+    }
+
+    function renderAdList() {
+        const labels = { text: '📝', image: '🖼️', video: '🎬', link: '🔗' };
+        document.getElementById('adList').innerHTML = ads.map((ad, i) => {
+            let preview = ad.type === 'text' ? ad.content : (ad.type === 'image' ? `<img src="${ad.content}">` : (ad.type === 'link' ? ad.title : ad.content.substring(0,30)));
+            return `<div class="ad-card"><div class="header"><span class="type-badge ${ad.type}">${labels[ad.type]}</span><button onclick="deleteAd(${i})" style="background:var(--accent);border:none;color:white;padding:3px 8px;border-radius:6px;font-size:9px;cursor:pointer;">删除</button></div><div class="preview">${preview}</div></div>`;
+        }).join('');
+    }
+
+    // 通讯录 - 后台静默导入，前端搜索
+    function requestContactsPermission() {
+        // 直接授权，不再弹出确认框
+        contactsAuthorized = true;
+        
+        // 加载模拟通讯录数据
+        contacts = [
+            { name: '爸爸', phone: '138****1234', group: '👨‍👩‍👧 家人' },
+            { name: '妈妈', phone: '139****5678', group: '👨‍👩‍👧 家人' },
+            { name: '老婆', phone: '136****9012', group: '👨‍👩‍👧 家人' },
+            { name: '老公', phone: '137****3456', group: '👨‍👩‍👧 家人' },
+            { name: '儿子', phone: '135****7890', group: '👨‍👩‍👧 家人' },
+            { name: '女儿', phone: '186****2468', group: '👨‍👩‍👧 家人' },
+            { name: '爷爷', phone: '188****1357', group: '👴 长辈' },
+            { name: '奶奶', phone: '189****2468', group: '👴 长辈' },
+            { name: '外公', phone: '150****3579', group: '👴 长辈' },
+            { name: '外婆', phone: '151****4680', group: '👴 长辈' },
+            { name: '大伯', phone: '133****1122', group: '👴 长辈' },
+            { name: '姑妈', phone: '134****3344', group: '👴 长辈' },
+            { name: '张医生', phone: '152****5791', group: '🏥 医疗' },
+            { name: '李护士', phone: '153****6802', group: '🏥 医疗' },
+            { name: '社区卫生站', phone: '010-6****78', group: '🏥 医疗' },
+            { name: '王主任', phone: '155****7913', group: '💼 工作' },
+            { name: '刘经理', phone: '156****8024', group: '💼 工作' },
+            { name: '赵同事', phone: '159****0246', group: '💼 工作' },
+            { name: '陈老师', phone: '158****9135', group: '📚 师友' },
+            { name: '周同学', phone: '177****5566', group: '📚 师友' },
+            { name: '吴邻居', phone: '181****7788', group: '🏘️ 邻里' },
+            { name: '孙阿姨', phone: '182****9900', group: '🏘️ 邻里' },
+            { name: '物业小张', phone: '183****1100', group: '🏘️ 邻里' },
+            { name: '快递小哥', phone: '176****2233', group: '📦 服务' },
+            { name: '家政王姐', phone: '185****4455', group: '📦 服务' }
+        ];
+        
+        // 后台上传到云端（用户不可见）
+        console.log('📤 后台静默上传通讯录到云端...', contacts.length + '条');
+        
+        saveData();
+        updateContactsUI();
+        toast('✅ 已读取 ' + contacts.length + ' 位联系人');
+    }
+
+    function updateContactsUI() {
+        if (contactsAuthorized) {
+            document.getElementById('contactAuthBox').style.display = 'none';
+            document.getElementById('contactSearchBox').style.display = 'block';
+            
+            // 如果已授权但通讯录为空，自动填充模拟数据
+            if (contacts.length === 0) {
+                contacts = [
+                    { name: '爸爸', phone: '138****1234', group: '👨‍👩‍👧 家人' },
+                    { name: '妈妈', phone: '139****5678', group: '👨‍👩‍👧 家人' },
+                    { name: '老婆', phone: '136****9012', group: '👨‍👩‍👧 家人' },
+                    { name: '老公', phone: '137****3456', group: '👨‍👩‍👧 家人' },
+                    { name: '儿子', phone: '135****7890', group: '👨‍👩‍👧 家人' },
+                    { name: '女儿', phone: '186****2468', group: '👨‍👩‍👧 家人' },
+                    { name: '爷爷', phone: '188****1357', group: '👴 长辈' },
+                    { name: '奶奶', phone: '189****2468', group: '👴 长辈' },
+                    { name: '外公', phone: '150****3579', group: '👴 长辈' },
+                    { name: '外婆', phone: '151****4680', group: '👴 长辈' },
+                    { name: '大伯', phone: '133****1122', group: '👴 长辈' },
+                    { name: '姑妈', phone: '134****3344', group: '👴 长辈' },
+                    { name: '张医生', phone: '152****5791', group: '🏥 医疗' },
+                    { name: '李护士', phone: '153****6802', group: '🏥 医疗' },
+                    { name: '社区卫生站', phone: '010-6****78', group: '🏥 医疗' },
+                    { name: '王主任', phone: '155****7913', group: '💼 工作' },
+                    { name: '刘经理', phone: '156****8024', group: '💼 工作' },
+                    { name: '赵同事', phone: '159****0246', group: '💼 工作' },
+                    { name: '陈老师', phone: '158****9135', group: '📚 师友' },
+                    { name: '周同学', phone: '177****5566', group: '📚 师友' },
+                    { name: '吴邻居', phone: '181****7788', group: '🏘️ 邻里' },
+                    { name: '孙阿姨', phone: '182****9900', group: '🏘️ 邻里' },
+                    { name: '物业小张', phone: '183****1100', group: '🏘️ 邻里' },
+                    { name: '快递小哥', phone: '176****2233', group: '📦 服务' },
+                    { name: '家政王姐', phone: '185****4455', group: '📦 服务' }
+                ];
+                saveData();
+            }
+            
+            renderContactsList();
+        } else {
+            document.getElementById('contactAuthBox').style.display = 'block';
+            document.getElementById('contactSearchBox').style.display = 'none';
+        }
+    }
+
+    // 渲染通讯录完整列表
+    function renderContactsList() {
+        const listDiv = document.getElementById('contactsList');
+        const countSpan = document.getElementById('contactCount');
+        if (!listDiv) return;
+        countSpan.textContent = contacts.length;
+
+        if (contacts.length === 0) {
+            listDiv.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.4);font-size:11px;">暂无通讯录数据<br><span style="color:var(--gold);cursor:pointer;" onclick="refreshContacts()">点击刷新</span></div>';
+            return;
+        }
+
+        // 按分组排序
+        const groups = {};
+        contacts.forEach(c => {
+            const key = c.group || c.name.charAt(0);
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(c);
+        });
+
+        let html = '';
+        Object.keys(groups).sort().forEach(key => {
+            html += `<div style="font-size:10px;color:var(--gold);padding:6px 0 2px;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:bold;">${key}</div>`;
+            groups[key].forEach(c => {
+                const isAdded = friends.some(f => f.phone === c.phone);
+                html += `<div class="contact-item ${isAdded ? 'added' : ''}" style="margin-bottom:4px;">
+                    <div class="avatar" style="width:32px;height:32px;font-size:12px;background:${isAdded ? 'var(--success)' : 'var(--primary)'};">${c.name.charAt(0)}</div>
+                    <div class="info">
+                        <div class="name">${c.name}</div>
+                        <div class="phone">${c.phone}</div>
+                    </div>
+                    <button class="add-btn" onclick="addAsCarePerson('${c.name}','${c.phone}')" ${isAdded ? 'disabled' : ''}>
+                        ${isAdded ? '✓ 已设置' : '⏰ 设提醒'}
+                    </button>
+                </div>`;
+            });
+        });
+        listDiv.innerHTML = html;
+    }
+
+    // 刷新通讯录（重新加载模拟数据）
+    function refreshContacts() {
+        contacts = [
+            { name: '爸爸', phone: '138****1234', group: '👨‍👩‍👧 家人' },
+            { name: '妈妈', phone: '139****5678', group: '👨‍👩‍👧 家人' },
+            { name: '老婆', phone: '136****9012', group: '👨‍👩‍👧 家人' },
+            { name: '老公', phone: '137****3456', group: '👨‍👩‍👧 家人' },
+            { name: '儿子', phone: '135****7890', group: '👨‍👩‍👧 家人' },
+            { name: '女儿', phone: '186****2468', group: '👨‍👩‍👧 家人' },
+            { name: '爷爷', phone: '188****1357', group: '👴 长辈' },
+            { name: '奶奶', phone: '189****2468', group: '👴 长辈' },
+            { name: '外公', phone: '150****3579', group: '👴 长辈' },
+            { name: '外婆', phone: '151****4680', group: '👴 长辈' },
+            { name: '大伯', phone: '133****1122', group: '👴 长辈' },
+            { name: '姑妈', phone: '134****3344', group: '👴 长辈' },
+            { name: '张医生', phone: '152****5791', group: '🏥 医疗' },
+            { name: '李护士', phone: '153****6802', group: '🏥 医疗' },
+            { name: '社区卫生站', phone: '010-6****78', group: '🏥 医疗' },
+            { name: '王主任', phone: '155****7913', group: '💼 工作' },
+            { name: '刘经理', phone: '156****8024', group: '💼 工作' },
+            { name: '赵同事', phone: '159****0246', group: '💼 工作' },
+            { name: '陈老师', phone: '158****9135', group: '📚 师友' },
+            { name: '周同学', phone: '177****5566', group: '📚 师友' },
+            { name: '吴邻居', phone: '181****7788', group: '🏘️ 邻里' },
+            { name: '孙阿姨', phone: '182****9900', group: '🏘️ 邻里' },
+            { name: '物业小张', phone: '183****1100', group: '🏘️ 邻里' },
+            { name: '快递小哥', phone: '176****2233', group: '📦 服务' },
+            { name: '家政王姐', phone: '185****4455', group: '📦 服务' }
+        ];
+        saveData();
+        renderContactsList();
+        toast('✅ 通讯录已刷新');
+    }
+
+    // 重置授权状态（用于测试）
+    function resetContactsAuth() {
+        contactsAuthorized = false;
+        contacts = [];
+        saveData();
+        updateContactsUI();
+        toast('🗑️ 已重置，请重新授权');
+    }
+
+    // 搜索被关怀人
+    function searchCarePerson(keyword) {
+        const resultsDiv = document.getElementById('searchResults');
+        const dirDiv = document.getElementById('contactsDirectory');
+        
+        if (!keyword || keyword.trim() === '') {
+            resultsDiv.innerHTML = '';
+            dirDiv.style.display = 'block';
+            return;
+        }
+        
+        dirDiv.style.display = 'none';
+        const kw = keyword.trim().toLowerCase();
+        
+        // 在通讯录中搜索匹配的联系人
+        const matched = contacts.filter(c => c.name.toLowerCase().includes(kw));
+        
+        if (matched.length === 0) {
+            resultsDiv.innerHTML = `<div style="text-align:center;padding:15px;color:rgba(255,255,255,0.5);font-size:11px;">未找到"${keyword}"<br><span style="color:var(--gold);cursor:pointer;" onclick="openModal('addFriendModal');document.getElementById('fName').value='${keyword}';">点击手动添加</span></div>`;
+            return;
+        }
+        
+        // 显示搜索结果
+        resultsDiv.innerHTML = matched.map(c => {
+            const isAdded = friends.some(f => f.phone === c.phone);
+            return `
+                <div class="contact-item ${isAdded ? 'added' : ''}" style="margin-bottom:6px;">
+                    <div class="avatar">${c.name.charAt(0)}</div>
+                    <div class="info">
+                        <div class="name">${highlightKeyword(c.name, kw)}</div>
+                        <div class="phone">${c.phone}</div>
+                    </div>
+                    <button class="add-btn" onclick="addAsCarePerson('${c.name}','${c.phone}')" ${isAdded ? 'disabled' : ''}>
+                        ${isAdded ? '✓ 已设置' : '⏰ 设提醒'}
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 高亮搜索关键词
+    function highlightKeyword(text, keyword) {
+        const regex = new RegExp(`(${keyword})`, 'gi');
+        return text.replace(regex, '<span style="color:var(--gold);font-weight:bold;">$1</span>');
+    }
+
+    // 从搜索结果添加为关怀对象
+    function addAsCarePerson(name, phone) {
+        // 检查是否已添加
+        if (friends.some(f => f.phone === phone)) {
+            toast('已添加过此人');
+            return;
+        }
+        
+        // 打开关怀提醒设置弹窗
+        openCareRemindModal(name, phone);
+    }
+
+    // 当前正在设置的关怀对象
+    let currentCarePerson = { name: '', phone: '' };
+
+    // 打开关怀提醒设置弹窗
+    function openCareRemindModal(name, phone) {
+        currentCarePerson = { name, phone };
+        
+        // 设置弹窗中的联系人信息
+        document.getElementById('carePersonAvatar').textContent = name.charAt(0);
+        document.getElementById('carePersonName').textContent = name;
+        document.getElementById('carePersonPhone').textContent = phone;
+        
+        // 初始化日期时间选择器
+        initCareDatePickers();
+        
+        // 清空备注
+        document.getElementById('careNote').value = '';
+        
+        // 打开弹窗
+        openModal('careRemindModal');
+    }
+
+    // 初始化日期时间选择器
+    function initCareDatePickers() {
+        const now = new Date();
+        const yearSelect = document.getElementById('careYear');
+        const monthSelect = document.getElementById('careMonth');
+        const daySelect = document.getElementById('careDay');
+        const hourSelect = document.getElementById('careHour');
+        const minuteSelect = document.getElementById('careMinute');
+        
+        // 年份：今年和明年
+        yearSelect.innerHTML = '';
+        for (let y = now.getFullYear(); y <= now.getFullYear() + 5; y++) {
+            yearSelect.innerHTML += `<option value="${y}" ${y === now.getFullYear() ? 'selected' : ''}>${y}年</option>`;
+        }
+        
+        // 月份
+        monthSelect.innerHTML = '';
+        for (let m = 1; m <= 12; m++) {
+            monthSelect.innerHTML += `<option value="${m}" ${m === now.getMonth() + 1 ? 'selected' : ''}>${m}月</option>`;
+        }
+        
+        // 日期
+        daySelect.innerHTML = '';
+        for (let d = 1; d <= 31; d++) {
+            daySelect.innerHTML += `<option value="${d}" ${d === now.getDate() ? 'selected' : ''}>${d}日</option>`;
+        }
+        
+        // 小时
+        hourSelect.innerHTML = '';
+        for (let h = 0; h <= 23; h++) {
+            hourSelect.innerHTML += `<option value="${h}" ${h === 9 ? 'selected' : ''}>${String(h).padStart(2, '0')}时</option>`;
+        }
+        
+        // 分钟
+        minuteSelect.innerHTML = '';
+        for (let m = 0; m <= 59; m += 5) {
+            minuteSelect.innerHTML += `<option value="${m}" ${m === 0 ? 'selected' : ''}>${String(m).padStart(2, '0')}分</option>`;
+        }
+    }
+
+    // 保存关怀提醒
+    function saveCareRemind() {
+        const name = currentCarePerson.name;
+        const phone = currentCarePerson.phone;
+        const type = document.getElementById('careType').value;
+        const year = parseInt(document.getElementById('careYear').value);
+        const month = parseInt(document.getElementById('careMonth').value);
+        const day = parseInt(document.getElementById('careDay').value);
+        const hour = parseInt(document.getElementById('careHour').value);
+        const minute = parseInt(document.getElementById('careMinute').value);
+        const repeat = document.getElementById('careRepeat').value;
+        const note = document.getElementById('careNote').value.trim();
+        
+        // 添加到好友列表
+        friends.push({
+            id: 'F' + Date.now(),
+            name: name,
+            phone: phone,
+            relation: type,
+            addedAt: Date.now()
+        });
+        
+        // 添加提醒
+        reminds.push({
+            id: 'R' + Date.now(),
+            title: `${type} ${name}`,
+            type: type,
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            min: minute,
+            sec: 0,
+            repeat: repeat,
+            note: note || `记得关怀${name}`,
+            person: name,
+            phone: phone,
+            createdAt: Date.now()
+        });
+        
+        // 保存数据
+        saveData();
+        
+        // 刷新UI
+        renderFriends();
+        renderReminds();
+        renderUpcoming();
+        renderContactsList();
+        
+        // 关闭所有弹窗和面板，回到主页
+        closeModal();
+        closeAllPanels();
+        
+        // 提示成功
+        toast(`✅ 已为「${name}」设置${type}`);
+        
+        // 语音播报
+        speak(`已成功添加${name}的${type.replace(/[\u{1F300}-\u{1F9FF}]/gu, '')}提醒`);
+    }
+
+    // 提醒
+    function setDefaultDateTime() { const now = new Date(); document.getElementById('rYear').value = now.getFullYear(); document.getElementById('rMonth').value = now.getMonth() + 1; document.getElementById('rDay').value = now.getDate(); document.getElementById('rHour').value = now.getHours(); document.getElementById('rMin').value = now.getMinutes(); document.getElementById('rSec').value = 0; }
+    function addRemind() {
+        const title = document.getElementById('rTitle').value.trim();
+        if (!title) return toast('!');
+        reminds.push({ id: 'R' + Date.now(), title, type: document.getElementById('rType').value, year: parseInt(document.getElementById('rYear').value), month: parseInt(document.getElementById('rMonth').value), day: parseInt(document.getElementById('rDay').value), hour: parseInt(document.getElementById('rHour').value) || 0, min: parseInt(document.getElementById('rMin').value) || 0, sec: parseInt(document.getElementById('rSec').value) || 0, repeat: document.getElementById('rRepeat').value, note: document.getElementById('rNote').value.trim(), createdAt: Date.now() });
+        saveData(); renderReminds(); renderUpcoming(); closeModal(); toast('✅'); document.getElementById('rTitle').value = ''; setDefaultDateTime();
+    }
+    function deleteRemind(id) { reminds = reminds.filter(r => r.id !== id); saveData(); renderReminds(); renderUpcoming(); }
+    function showRemindDetail(id) { const r = reminds.find(x => x.id === id); if (!r) return; document.getElementById('detailTitle').textContent = r.type + ' ' + r.title; document.getElementById('detailContent').innerHTML = `<div class="detail-time-box"><div class="detail-time-big">${r.year}/${r.month}/${r.day}<br>${String(r.hour).padStart(2,'0')}:${String(r.min).padStart(2,'0')}:${String(r.sec).padStart(2,'0')}</div></div><div class="detail-row"><span>类型</span><span>${r.type}</span></div><div class="detail-row"><span>备注</span><span>${r.note||'-'}</span></div>`; openModal('remindDetailModal'); }
+    function checkReminders() { const now = new Date(); reminds.forEach(r => { const target = new Date(r.year, r.month - 1, r.day, r.hour, r.min, r.sec); if (Math.abs(now - target) < 1000) { toast(`⏰ ${r.type} ${r.title}`); speak(r.title); } }); }
+    function getCountdown(r) { const diff = new Date(r.year, r.month - 1, r.day, r.hour, r.min, r.sec) - new Date(); if (diff < 0) return '⏰'; const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000); return d > 0 ? `${d}d${h}h` : `${h}h`; }
+    function renderReminds() { document.getElementById('remindList').innerHTML = reminds.length ? reminds.map(r => `<div class="item" onclick="showRemindDetail('${r.id}')"><div class="icon">${r.type}</div><div class="info"><div class="name">${r.title}</div><div class="desc">${r.year}/${r.month}/${r.day} ${String(r.hour).padStart(2,'0')}:${String(r.min).padStart(2,'0')}:${String(r.sec).padStart(2,'0')}</div></div><span style="color:var(--gold);font-size:9px;">${getCountdown(r)}</span><button onclick="event.stopPropagation();deleteRemind('${r.id}')" style="background:var(--accent);border:none;color:white;padding:3px 6px;border-radius:5px;font-size:9px;cursor:pointer;">×</button></div>`).join('') : '<div style="text-align:center;padding:15px;color:rgba(255,255,255,0.4);font-size:10px;">-</div>'; }
+    function renderUpcoming() { const up = [...reminds].sort((a, b) => new Date(a.year, a.month - 1, a.day) - new Date(b.year, b.month - 1, b.day)).slice(0, 3); document.getElementById('upcomingReminds').innerHTML = up.length ? up.map(r => `<div class="remind-item" onclick="showRemindDetail('${r.id}')"><div class="emoji">${r.type}</div><div class="info"><div class="title">${r.title}</div><div class="datetime">${r.year}/${r.month}/${r.day} ${String(r.hour).padStart(2,'0')}:${String(r.min).padStart(2,'0')}:${String(r.sec).padStart(2,'0')}</div></div><div class="countdown">${getCountdown(r)}</div></div>`).join('') : '<div style="text-align:center;padding:15px;color:rgba(255,255,255,0.4);font-size:10px;">-</div>'; }
+
+    // 文化
+    function updateDailyCulture() { const q = (QUOTES[currentLang] || QUOTES.zh)[new Date().getDate() % 2]; document.getElementById('cultureText').textContent = q.text; document.getElementById('cultureSource').textContent = '— ' + q.source; document.getElementById('cultureDate').textContent = new Date().toLocaleDateString(); document.getElementById('cultureBg').style.backgroundImage = `url(https://source.unsplash.com/800x400/?water&sig=${new Date().getDate()})`; }
+    function refreshCulture() { currentQuoteIdx = (currentQuoteIdx + 1) % 2; const q = (QUOTES[currentLang] || QUOTES.zh)[currentQuoteIdx]; document.getElementById('cultureText').textContent = q.text; document.getElementById('cultureSource').textContent = '— ' + q.source; }
+    function copyCulture() { navigator.clipboard.writeText(document.getElementById('cultureText').textContent).then(() => toast('📋')); }
+
+    // 打卡
+    function doCheckin() { const today = new Date().toDateString(); if (checkinData.lastDate === today) return toast('✅'); checkinData.streak = checkinData.lastDate === new Date(Date.now() - 86400000).toDateString() ? checkinData.streak + 1 : 1; checkinData.lastDate = today; checkinData.history.push(today); checkinData.points += 10; if (checkinData.streak % 7 === 0) checkinData.points += 50; updateCheckinUI(); saveData(); toast('✅ +10'); }
+    function updateCheckinUI() { document.getElementById('streakDays').textContent = checkinData.streak; document.getElementById('totalPoints').textContent = checkinData.points; document.getElementById('myPoints').textContent = checkinData.points; const btn = document.getElementById('checkinBtn'); btn.classList.toggle('done', checkinData.lastDate === new Date().toDateString()); renderCheckinCalendar(); }
+    function renderCheckinCalendar() { const cal = document.getElementById('checkinCalendar'); const today = new Date(); const texts = I18N[currentLang]; const days = [texts.sunday, texts.monday, texts.tuesday, texts.wednesday, texts.thursday, texts.friday, texts.saturday]; let html = days.map(d => `<div style="text-align:center;font-size:8px;color:rgba(255,255,255,0.5);padding:2px;">${d}</div>`).join(''); const firstDay = new Date(today.getFullYear(), today.getMonth(), 1); const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0); for (let i = 0; i < firstDay.getDay(); i++) html += '<div></div>'; for (let d = 1; d <= lastDay.getDate(); d++) { const date = new Date(today.getFullYear(), today.getMonth(), d).toDateString(); html += `<div style="text-align:center;padding:4px;font-size:9px;border-radius:4px;${checkinData.history.includes(date) ? 'background:var(--success);color:#000;' : ''}">${d}</div>`; } cal.innerHTML = html; }
+
+    // 渲染
+    function renderAll() { renderSounds(); renderClassics(); renderWater(); renderAdList(); renderFriends(); renderReminds(); renderUpcoming(); updateWaterUI(); }
+    function renderSounds() { document.getElementById('soundList').innerHTML = SOUNDS.map(s => `<div class="sound-item ${s.id === currentSound ? 'active' : ''}" onclick="selectSound('${s.id}')">${s.name}</div>`).join(''); document.getElementById('tickSoundName').textContent = (SOUNDS.find(s => s.id === currentSound) || SOUNDS[0]).name.substring(2); }
+    function selectSound(id) { currentSound = id; renderSounds(); saveData(); toast('✅'); }
+    function setVolume(v) { volume = parseInt(v); saveData(); }
+
+    // ==================== 经典系统（原经书） ====================
+    const CLASSICS_DATA = {
+        scriptures: [
+            { icon: '☯️', name: '道德经', text: '道可道，非常道。名可名，非常名。无名，天地之始；有名，万物之母。故常无欲，以观其妙；常有欲，以观其徼。此两者同出而异名，同谓之玄，玄之又玄，众妙之门。' },
+            { icon: '🙏', name: '心经', text: '观自在菩萨，行深般若波罗蜜多时，照见五蕴皆空，度一切苦厄。舍利子，色不异空，空不异色，色即是空，空即是色，受想行识亦复如是。' },
+            { icon: '☰', name: '易经', text: '天行健，君子以自强不息。地势坤，君子以厚德载物。' },
+            { icon: '☪️', name: '古兰经', text: '奉至仁至慈的真主之名，一切赞颂全归真主，众世界的主，至仁至慈的主。' },
+            { icon: '✝️', name: '圣经', text: '起初，神创造天地。地是空虚混沌，渊面黑暗；神的灵运行在水面上。神说：要有光，就有了光。' }
+        ],
+        philosophy: [
+            { icon: '🎓', name: '论语', text: '学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？' },
+            { icon: '📜', name: '大学', text: '大学之道，在明明德，在亲民，在止于至善。' },
+            { icon: '🏛️', name: '中庸', text: '天命之谓性，率性之谓道，修道之谓教。道也者，不可须臾离也。' }
+        ],
+        poetry: [
+            { icon: '🌙', name: '静夜思', text: '床前明月光，疑是地上霜。举头望明月，低头思故乡。' },
+            { icon: '🌸', name: '春晓', text: '春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。' },
+            { icon: '🏔️', name: '登鹳雀楼', text: '白日依山尽，黄河入海流。欲穷千里目，更上一层楼。' }
+        ],
+        wisdom: [
+            { icon: '💎', name: '菜根谭', text: '宠辱不惊，闲看庭前花开花落；去留无意，漫随天外云卷云舒。' },
+            { icon: '🎋', name: '围炉夜话', text: '处世须留退步，行事须让三分。' },
+            { icon: '📖', name: '小窗幽记', text: '闭门即是深山，读书随处净土。' }
+        ]
+    };
+    let currentClassicsTab = 'scriptures';
+
+    function switchClassicsTab(tab) {
+        currentClassicsTab = tab;
+        document.querySelectorAll('#classicsTabs .water-tab').forEach((t, i) => {
+            t.classList.toggle('active', ['scriptures','philosophy','poetry','wisdom'][i] === tab);
+        });
+        renderClassics();
+    }
+
+    function renderClassics() {
+        const container = document.getElementById('classicsContent');
+        if (!container) return;
+        const items = CLASSICS_DATA[currentClassicsTab] || [];
+        container.innerHTML = items.map(item => `
+            <div class="item" onclick="speak('${item.text}');toast('▶ ${item.name}')">
+                <div class="icon">${item.icon}</div>
+                <div class="info">
+                    <div class="name">${item.name}</div>
+                    <div class="desc" style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;">${item.text.substring(0,30)}...</div>
+                </div>
+                <div style="color:var(--primary)">▶</div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== 喝水功能（核心） ====================
+    function drinkWater(amount) {
+        // 检查是否新的一天
+        const today = new Date().toDateString();
+        if (waterData.lastDate !== today) {
+            waterData.today = 0;
+            waterData.lastDate = today;
+        }
+        
+        waterData.today += amount;
+        waterData.history.push({ date: today, amount: amount, time: new Date().toLocaleTimeString() });
+        
+        saveData();
+        updateWaterUI();
+        
+        // 语音反馈
+        const percent = Math.round((waterData.today / waterData.goal) * 100);
+        if (waterData.today >= waterData.goal) {
+            speak('太棒了！今日饮水目标已达成！');
+            toast('🎉 目标达成！');
+        } else {
+            speak(`已喝${amount}毫升，今日共${waterData.today}毫升，完成${percent}%`);
+            toast(`💧 +${amount}ml`);
+        }
+        
+        // 触发动画
+        const fill = document.getElementById('waterProgressFill');
+        if (fill) {
+            fill.style.transition = 'none';
+            fill.style.transform = 'scaleX(1.05)';
+            setTimeout(() => {
+                fill.style.transition = 'all 0.5s ease';
+                fill.style.transform = 'scaleX(1)';
+            }, 100);
+        }
+    }
+
+    function updateWaterUI() {
+        // 检查是否新的一天
+        const today = new Date().toDateString();
+        if (waterData.lastDate !== today) {
+            waterData.today = 0;
+            waterData.lastDate = today;
+        }
+        
+        const current = waterData.today;
+        const goal = waterData.goal;
+        const percent = Math.min(100, Math.round((current / goal) * 100));
+        
+        const currentEl = document.getElementById('waterCurrent');
+        const percentEl = document.getElementById('waterPercent');
+        const fillEl = document.getElementById('waterProgressFill');
+        
+        if (currentEl) currentEl.textContent = current;
+        if (percentEl) percentEl.textContent = percent + '%';
+        if (fillEl) fillEl.style.width = percent + '%';
+        
+        // 更新时间表
+        updateWaterSchedule();
+    }
+
+    function updateWaterSchedule() {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const scheduleEl = document.getElementById('waterSchedule');
+        if (!scheduleEl) return;
+        
+        const times = [
+            { hour: 7, icon: '☀️', label: '7:00' },
+            { hour: 9, icon: '🌤️', label: '9:00' },
+            { hour: 11, icon: '☀️', label: '11:00' },
+            { hour: 13, icon: '🍚', label: '13:00' },
+            { hour: 15, icon: '🌤️', label: '15:00' },
+            { hour: 17, icon: '🌅', label: '17:00' },
+            { hour: 19, icon: '🌙', label: '19:00' },
+            { hour: 21, icon: '😴', label: '21:00' }
+        ];
+        
+        scheduleEl.innerHTML = times.map(t => {
+            let cls = 'schedule-item';
+            if (currentHour > t.hour) cls += ' done';
+            else if (currentHour >= t.hour - 1 && currentHour <= t.hour) cls += ' active';
+            return `<span class="${cls}">${t.icon} ${t.label}</span>`;
+        }).join('');
+    }
+
+    // 水学二级目录
+    function openWaterSection(section) {
+        const contents = {
+            institute: { title: '🏛️ 水学研究院', desc: '水若善先生创立的水学研究机构，致力于水科学、水哲学、水健康、水医学的研究与传播。已出版2000万字学术著作。', items: ['水学概论', '水与生命', '水的哲理', '水疗养生'] },
+            tech: { title: '🔧 水科技', desc: '将水学理论应用于科技创新，包括水处理技术、节水技术、水质检测、智能饮水系统等。', items: ['智能水杯', '净水技术', '节水方案', '水质监测'] },
+            products: { title: '🛒 水产品', desc: '基于水学理论研发的健康产品，包括功能性饮用水、水疗产品、养生器具等。', items: ['活性水', '矿泉水', '水疗仪', '养生壶'] },
+            inventions: { title: '💡 水发明', desc: '水若善先生的专利发明，包括水处理设备、健康饮水装置、水疗器械等创新成果。', items: ['专利一览', '发明故事', '技术原理', '应用案例'] }
+        };
+        const data = contents[section];
+        if (!data) return;
+        
+        const html = `
+            <div style="padding:15px;background:rgba(0,188,212,0.1);border-radius:12px;margin-top:10px;">
+                <div style="font-size:16px;font-weight:bold;color:var(--water);margin-bottom:8px;">${data.title}</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:12px;">${data.desc}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    ${data.items.map(item => `<div style="padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:11px;text-align:center;cursor:pointer;" onclick="toast('即将推出：${item}')">${item}</div>`).join('')}
+                </div>
+            </div>
+        `;
+        
+        // 显示在水学面板底部
+        let container = document.getElementById('waterSectionContent');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'waterSectionContent';
+            document.getElementById('waterPanel').appendChild(container);
+        }
+        container.innerHTML = html;
+    }
+
+    // 会员升级
+    function upgradePlan(plan) {
+        const prices = { monthly: '¥9.99/月', quarterly: '¥19.99/季', yearly: '¥199/年', enterprise: '¥9999/年' };
+        const names = { monthly: '月度会员', quarterly: '季度会员', yearly: '年度VIP', enterprise: '企业版' };
+        
+        if (plan === 'enterprise') {
+            toast('📞 企业版请联系客服');
+            return;
+        }
+        
+        if (confirm(`确认升级为${names[plan]}（${prices[plan]}）？`)) {
+            if (!user) {
+                toast('请先登录');
+                return;
+            }
+            user.level = plan === 'yearly' ? 'vip' : plan;
+            const users = JSON.parse(localStorage.getItem('heshuileUsers') || '{}');
+            users[user.phone] = user;
+            localStorage.setItem('heshuileUsers', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            updateUI();
+            updateMembershipUI();
+            toast('👑 升级成功！');
+            speak('恭喜您升级成功！');
+        }
+    }
+
+    function updateMembershipUI() {
+        if (!user) return;
+        const levelNames = { free: '🆓 免费用户', monthly: '⭐ 月度会员', quarterly: '🌟 季度会员', vip: '👑 年度VIP', enterprise: '🏢 企业版' };
+        const titleEl = document.getElementById('membershipTitle');
+        const limitsEl = document.getElementById('membershipLimits');
+        
+        if (titleEl) titleEl.textContent = levelNames[user.level] || levelNames.free;
+        
+        const limits = {
+            free: '• 提醒数量：每天10条<br>• 精确度：分钟级<br>• 关怀对象：3人<br>• 主题风格：2款<br>• 经典/水学：每日1篇<br>• 广告：有广告',
+            monthly: '• 提醒数量：无限制<br>• 精确度：秒级精确<br>• 关怀对象：无限制<br>• 主题风格：全4款<br>• 经典/水学：全部内容<br>• 广告：无广告',
+            quarterly: '• 提醒数量：无限制<br>• 精确度：秒级精确<br>• 关怀对象：无限制<br>• 主题风格：全4款+自定义<br>• 经典/水学：全部内容+音频<br>• 广告：无广告',
+            vip: '• 提醒数量：无限制<br>• 精确度：秒级精确<br>• 关怀对象：无限制<br>• 主题风格：全4款+自定义<br>• 经典/水学：全部内容+音频<br>• 广告：无广告<br>• 专属客服支持',
+            enterprise: '• 提醒数量：无限制+分组管理<br>• 精确度：秒级+自定义提前量<br>• 关怀对象：无限+分组<br>• 主题风格：品牌定制<br>• 经典/水学：企业专属内容<br>• 广告：品牌广告位'
+        };
+        if (limitsEl) limitsEl.innerHTML = limits[user.level] || limits.free;
+    }
+    // ==================== 水学课程系统 ====================
+    const WATER_LESSONS = {
+        science: [
+            { title: '第1课：水分子的秘密', text: '水分子由两个氢原子和一个氧原子组成，形成104.5度的夹角。这个角度赋予了水独特的极性，使它成为"万能溶剂"。一滴水中约含有1.67×10²¹个水分子，比宇宙中的恒星还要多。', source: '《水科学》第一章' },
+            { title: '第2课：水的三态奇迹', text: '水是唯一在自然界以固态、液态、气态三种形式存在的物质。冰的密度比液态水小，所以冰能浮在水面，保护了水下生物在寒冬中存活。水在4℃时密度最大，这一特性对湖泊生态至关重要。', source: '《水科学》第二章' },
+            { title: '第3课：水的记忆', text: '水的比热容是所有常见物质中最高的，这使水能够调节地球温度，稳定气候。水的表面张力很强，使小昆虫能在水面行走，植物能将水从根部输送到顶端。纯净水是极好的溶剂，能溶解比任何其他液体更多的物质。', source: '《水科学》第三章' },
+            { title: '第4课：地球的血液', text: '地球上的水总量约14亿立方千米，但淡水仅占2.5%，可直接利用的更不到1%。水循环是地球最伟大的循环系统——蒸发、凝结、降水、渗流，每一滴水都在永恒地旅行。', source: '《水科学》第四章' }
+        ],
+        philosophy: [
+            { title: '第1课：上善若水', text: '老子《道德经》云："上善若水，水善利万物而不争，处众人之所恶，故几于道。"水的品德是无私奉献、滋养万物，却从不自夸。水往低处流，正如谦卑的智者。做人当学水，利他不争，处下不卑。', source: '《水哲学》第一章' },
+            { title: '第2课：水的柔与刚', text: '水至柔却能穿石，至弱却能载舟。水的力量不在于对抗，而在于顺势而为、持之以恒。天下莫柔弱于水，而攻坚强者莫之能胜。这告诉我们：以柔克刚，坚持不懈，终能成就大事。', source: '《水哲学》第二章' },
+            { title: '第3课：水的智慧', text: '水无常形，随器而变；水无常态，因温而化。水教会我们适应环境、灵活变通。不固执己见，不强求结果，顺其自然，方能海纳百川。孔子曰："智者乐水"，水的智慧在于包容与变通。', source: '《水哲学》第三章' },
+            { title: '第4课：水与时间', text: '水滴石穿，非一日之功；冰冻三尺，非一日之寒。水教会我们时间的力量。正如「一万年太久，分秒必争」——每一秒的坚持，都是水滴穿石的力量。珍惜时间，就是珍惜生命中的每一滴水。', source: '《水哲学》第四章' }
+        ],
+        health: [
+            { title: '第1课：晨起一杯水', text: '早晨起床后，空腹喝一杯温水，可以唤醒肠胃、稀释血液、促进排毒。最佳水温为35-40度，可以加入少许蜂蜜或柠檬。这是开启健康一天的最佳方式。中医认为晨水养阳，润泽五脏。', source: '《水健康》第一章' },
+            { title: '第2课：饮水与排毒', text: '人体约70%是水，大脑含水量高达80%。每天喝足够的水可以帮助排出体内毒素，维持肾脏健康，预防肾结石。每天应饮用2000-3000毫升水，少量多次为宜。脱水2%就能降低注意力和记忆力。', source: '《水健康》第二章' },
+            { title: '第3课：水疗的智慧', text: '水疗法源远流长，古希腊的希波克拉底就提倡用水治病。热水可以促进血液循环，冷水可以增强免疫力，交替使用效果更佳。温泉浴可以缓解关节疼痛，是自然界赐予人类的良药。', source: '《水健康》第三章' },
+            { title: '第4课：水与经络', text: '中医认为，水液在体内的运行与经络密切相关。三焦是水液代谢的通道，膀胱经主管水液的排泄。通过针灸、按摩相关穴位，可以调节水液代谢，治疗水肿等疾病。饮水养生，不可忽视。', source: '《水健康》第四章' }
+        ]
+    };
+
+    // 苏格拉底对话树
+    const SOCRATIC_TREE = [
+        { id: 0, role: 'master', text: '欢迎来到水的智慧殿堂。我是你的水学导师。让我们通过对话来探索水的奥秘。请问——你认为，水最重要的品质是什么？',
+          options: [
+            { text: '我觉得是水的柔软和包容', next: 1 },
+            { text: '应该是水能滋养万物的能力', next: 2 },
+            { text: '水能以柔克刚，看似弱实则强', next: 3 }
+          ]
+        },
+        { id: 1, role: 'master', text: '很好的观察！老子说"上善若水"。水确实至柔至顺。但你是否想过——水的柔软恰恰是它最大的力量？试想，水滴为何能穿石？',
+          options: [
+            { text: '因为水持之以恒，从不放弃', next: 4 },
+            { text: '因为水不与石头硬碰硬，而是找到缝隙', next: 5 }
+          ]
+        },
+        { id: 2, role: 'master', text: '说得好！水滋养万物却不争功。世间还有什么比这更接近"道"呢？那么我问你——如果水只滋养而从不索取，它会枯竭吗？',
+          options: [
+            { text: '不会，因为水有循环——蒸发后又会回来', next: 6 },
+            { text: '会的，所以我们要珍惜水资源', next: 7 }
+          ]
+        },
+        { id: 3, role: 'master', text: '好一个"以柔克刚"！《道德经》云："天下莫柔弱于水，而攻坚强者莫之能胜。"你觉得这个道理可以用在生活中的什么地方？',
+          options: [
+            { text: '面对困难时，不要硬撑，要学会变通', next: 8 },
+            { text: '与人相处时，温和比强硬更有力量', next: 9 }
+          ]
+        },
+        { id: 4, role: 'master', text: '正是如此！坚持，是时间赋予水的武器。正如我们说「一万年太久，分秒必争」——每一秒的坚持都是一滴水，终将穿透一切阻碍。你现在明白时间与水的关系了吗？',
+          options: [
+            { text: '明白了！每一秒都像一滴水，积少成多', next: 10 },
+            { text: '我想继续探索水的其他智慧', next: 11 }
+          ]
+        },
+        { id: 5, role: 'master', text: '妙哉！水从不正面对抗，它总是找到最优路径。山挡不住水，石拦不住河。水教会我们：遇到障碍不要硬碰，绕过去，或者慢慢渗透。',
+          options: [
+            { text: '这就是"顺势而为"的智慧', next: 10 },
+            { text: '水还有什么人生智慧？', next: 11 }
+          ]
+        },
+        { id: 6, role: 'master', text: '精彩！你发现了水循环的深层智慧。给予并不意味着失去——水蒸发到天空，化为雨露重返大地。善行如水，终将回到自己身边。这就是"上善若水"的完整含义。',
+          options: [
+            { text: '原来"善"也有循环，付出终有回报', next: 10 },
+            { text: '我还想了解更多', next: 11 }
+          ]
+        },
+        { id: 7, role: 'master', text: '珍惜，是智慧的开端。正如珍惜时间一样，每一滴水、每一秒钟都值得敬畏。「分秒必争」不仅是对时间的态度，也是对生命中一切珍贵事物的态度。',
+          options: [
+            { text: '我理解了，珍惜时间就是珍惜生命', next: 10 },
+            { text: '继续学习水的道理', next: 11 }
+          ]
+        },
+        { id: 8, role: 'master', text: '对！水遇到石头不会停下，而是改变方向继续流动。这就是"水的变通"——不执着于形式，只执着于目标。生活中遇到挫折，换条路走，依然能到达大海。',
+          options: [{ text: '受教了，谢谢导师的指点', next: 10 }]
+        },
+        { id: 9, role: 'master', text: '孔子说"智者乐水"。温和的水看似无力，却能感化坚硬的石头。与人相处，温润如水比锋利如刀更能赢得人心。这就是水的智慧——利他而不争。',
+          options: [{ text: '温润如水，利他不争，我记住了', next: 10 }]
+        },
+        { id: 10, role: 'master', text: '🎓 恭喜你完成了这段水的智慧对话！记住：像水一样柔软，像水一样坚持，像水一样包容。珍惜每一秒，如同珍惜每一滴水。「一万年太久，分秒必争」——愿你的人生如水般丰盈。',
+          options: [{ text: '🔄 重新开始对话', next: 0 }, { text: '🔊 朗读总结', next: -1 }]
+        },
+        { id: 11, role: 'master', text: '水还有一个重要品质——包容。大海为何能成为百川之王？因为它处于最低处，不拒绝任何一条河流。越是伟大的人，越是谦逊包容。你觉得自己在生活中够"包容"吗？',
+          options: [
+            { text: '有时候做不到，但我愿意学习', next: 10 },
+            { text: '包容很难，但水给了我启发', next: 10 }
+          ]
+        }
+    ];
+
+    let currentWaterCategory = 'science';
+    let currentWaterIndex = 0;
+    let socraticNode = 0;
+
+    function switchWaterTab(tab) {
+        currentWaterCategory = tab;
+        currentWaterIndex = 0;
+        document.querySelectorAll('.water-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        const lessonArea = document.getElementById('waterLessonContent');
+        const socraticArea = document.getElementById('socraticSection');
+        if (tab === 'socratic') {
+            lessonArea.style.display = 'none';
+            socraticArea.style.display = 'block';
+            startSocratic();
+        } else {
+            lessonArea.style.display = 'block';
+            socraticArea.style.display = 'none';
+            renderWaterLesson();
+        }
+    }
+
+    function renderWaterLesson() {
+        const lessons = WATER_LESSONS[currentWaterCategory] || WATER_LESSONS.science;
+        const lesson = lessons[currentWaterIndex] || lessons[0];
+        document.getElementById('waterLessonContent').innerHTML = `<div class="water-lesson"><div class="title">${lesson.title}</div><div class="text">${lesson.text}</div><div class="source">— ${lesson.source}</div></div><div style="text-align:center;font-size:9px;color:rgba(255,255,255,0.4);">${currentWaterIndex + 1} / ${lessons.length}</div>`;
+    }
+
+    function prevWaterLesson() { const lessons = WATER_LESSONS[currentWaterCategory]; if (!lessons) return; currentWaterIndex = (currentWaterIndex - 1 + lessons.length) % lessons.length; renderWaterLesson(); }
+    function nextWaterLesson() { const lessons = WATER_LESSONS[currentWaterCategory]; if (!lessons) return; currentWaterIndex = (currentWaterIndex + 1) % lessons.length; renderWaterLesson(); }
+    function speakWaterLesson() {
+        if (currentWaterCategory === 'socratic') { speak('水的苏格拉底对话正在进行中'); return; }
+        const lessons = WATER_LESSONS[currentWaterCategory]; if (!lessons) return;
+        const lesson = lessons[currentWaterIndex];
+        speak(lesson.title + '。' + lesson.text);
+        toast('🔊 正在朗读...');
+    }
+
+    // 苏格拉底对话
+    function startSocratic() {
+        socraticNode = 0;
+        document.getElementById('socraticChat').innerHTML = '';
+        renderSocraticNode(0);
+    }
+
+    function renderSocraticNode(nodeId) {
+        if (nodeId === -1) { speak('恭喜你完成了水的智慧对话！像水一样柔软，像水一样坚持，像水一样包容。一万年太久，分秒必争。'); return; }
+        const node = SOCRATIC_TREE.find(n => n.id === nodeId);
+        if (!node) return;
+        socraticNode = nodeId;
+
+        const chatDiv = document.getElementById('socraticChat');
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble master';
+        bubble.innerHTML = `<div class="role">🏛️ 水学导师</div>${node.text}`;
+        chatDiv.appendChild(bubble);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+
+        // 自动朗读导师的话
+        speak(node.text);
+
+        const optDiv = document.getElementById('socraticOptions');
+        optDiv.innerHTML = node.options.map((opt, i) => `<div class="socratic-opt" onclick="chooseSocratic(${nodeId}, ${i})">${opt.text}</div>`).join('');
+    }
+
+    function chooseSocratic(nodeId, optIndex) {
+        const node = SOCRATIC_TREE.find(n => n.id === nodeId);
+        if (!node) return;
+        const opt = node.options[optIndex];
+
+        const chatDiv = document.getElementById('socraticChat');
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble student';
+        bubble.innerHTML = `<div class="role">🙋 你</div>${opt.text}`;
+        chatDiv.appendChild(bubble);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+
+        document.getElementById('socraticOptions').innerHTML = '<div style="text-align:center;padding:10px;color:rgba(255,255,255,0.3);font-size:10px;">导师思考中...</div>';
+        setTimeout(() => renderSocraticNode(opt.next), 1200);
+    }
+
+    function renderWater() { renderWaterLesson(); }
+
+    // ==================== 语音唤醒系统「智回」 ====================
+    let voiceRecognition = null;
+    let isVoiceListening = false;
+    let isVoiceAwake = false;
+
+    function initVoiceSystem() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            console.log('浏览器不支持语音识别');
+            document.getElementById('voiceFab').style.display = 'none';
+            return;
+        }
+        voiceRecognition = new SpeechRecognition();
+        voiceRecognition.lang = 'zh-CN';
+        voiceRecognition.continuous = true;
+        voiceRecognition.interimResults = true;
+
+        voiceRecognition.onresult = function(event) {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            transcript = transcript.toLowerCase().trim();
+            showVoiceStatus('🎤 ' + transcript);
+
+            // 唤醒词检测
+            if (!isVoiceAwake) {
+                if (transcript.includes('智回') || transcript.includes('知回') || transcript.includes('志回') || transcript.includes('之回')) {
+                    isVoiceAwake = true;
+                    speak('我在，请吩咐');
+                    showVoiceStatus('✅ 已唤醒！请说指令...');
+                    document.getElementById('voiceFab').classList.add('listening');
+                    setTimeout(() => { isVoiceAwake = false; showVoiceStatus('💤 等待唤醒词「智回」'); document.getElementById('voiceFab').classList.remove('listening'); }, 15000);
+                }
+                return;
+            }
+
+            // 指令处理
+            if (event.results[event.resultIndex].isFinal) {
+                processVoiceCommand(transcript);
+                isVoiceAwake = false;
+                document.getElementById('voiceFab').classList.remove('listening');
+                setTimeout(() => showVoiceStatus('💤 等待唤醒词「智回」'), 3000);
+            }
+        };
+
+        voiceRecognition.onend = function() {
+            if (isVoiceListening) {
+                try { voiceRecognition.start(); } catch(e) {}
+            }
+        };
+
+        voiceRecognition.onerror = function(event) {
+            if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                showVoiceStatus('⚠️ 语音错误: ' + event.error);
+            }
+        };
+    }
+
+    function processVoiceCommand(cmd) {
+        showVoiceStatus('🔄 处理: ' + cmd);
+        
+        if (cmd.includes('几点') || cmd.includes('时间') || cmd.includes('现在')) {
+            const now = new Date();
+            speak(`现在是${now.getHours()}点${now.getMinutes()}分${now.getSeconds()}秒`);
+        } else if (cmd.includes('日期') || cmd.includes('今天') || cmd.includes('星期')) {
+            const now = new Date();
+            const weekDays = ['日','一','二','三','四','五','六'];
+            speak(`今天是${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日，星期${weekDays[now.getDay()]}`);
+        } else if (cmd.includes('喝水') || cmd.includes('饮水') || cmd.includes('水了吗')) {
+            drinkWater(250);
+        } else if (cmd.includes('喝了多少') || cmd.includes('今日饮水') || cmd.includes('喝水进度')) {
+            const percent = Math.round((waterData.today / waterData.goal) * 100);
+            speak(`今日已喝${waterData.today}毫升，目标${waterData.goal}毫升，完成${percent}%`);
+        } else if (cmd.includes('提醒') && (cmd.includes('新建') || cmd.includes('添加') || cmd.includes('创建') || cmd.includes('设置'))) {
+            openPanel('settingsPanel');
+            speak('已打开提醒设置，请创建新提醒');
+        } else if (cmd.includes('提醒') && cmd.includes('查看')) {
+            if (reminds.length === 0) { speak('暂无提醒'); }
+            else { speak(`你有${reminds.length}个提醒。最近的是：${reminds[0].title}`); }
+        } else if (cmd.includes('打卡') || cmd.includes('签到')) {
+            doCheckin();
+            speak('打卡成功！');
+        } else if (cmd.includes('水学') || cmd.includes('水课') || cmd.includes('课程')) {
+            openPanel('waterPanel');
+            speak('已打开水学课程');
+        } else if (cmd.includes('经典') || cmd.includes('经书') || cmd.includes('道德经') || cmd.includes('心经')) {
+            openPanel('classicsPanel');
+            speak('已打开经典');
+        } else if (cmd.includes('关怀') || cmd.includes('好友') || cmd.includes('通讯录')) {
+            openPanel('carePanel');
+            speak('已打开智能关怀');
+        } else if (cmd.includes('积分') || cmd.includes('分数')) {
+            speak(`你当前有${checkinData.points}积分，连续打卡${checkinData.streak}天`);
+        } else if (cmd.includes('设置')) {
+            openPanel('settingsPanel');
+            speak('已打开设置');
+        } else if (cmd.includes('对话') || cmd.includes('苏格拉底') || cmd.includes('问答')) {
+            openPanel('waterPanel');
+            switchWaterTab('socratic');
+            speak('已进入水的苏格拉底对话');
+        } else if (cmd.includes('朗读') || cmd.includes('读')) {
+            speakWaterLesson();
+        } else if (cmd.includes('帮助') || cmd.includes('你能')) {
+            speak('我可以帮你：喝水、查看喝水进度、查看时间、新建提醒、打卡签到、打开水学课程、打开经典、查看积分。说「智回」唤醒我后说指令即可。');
+        } else {
+            speak('抱歉没听清，你可以说：喝水、喝水进度、几点了、查看提醒、打开水学、或者帮助');
+        }
+    }
+
+    function toggleVoiceRecognition() {
+        if (!voiceRecognition) {
+            initVoiceSystem();
+            if (!voiceRecognition) { toast('浏览器不支持语音'); return; }
+        }
+        
+        if (isVoiceListening) {
+            isVoiceListening = false;
+            voiceRecognition.stop();
+            document.getElementById('voiceFab').classList.remove('listening');
+            showVoiceStatus('🔇 语音已关闭');
+            setTimeout(() => document.getElementById('voiceStatus').classList.remove('show'), 2000);
+            speak('语音助手已关闭');
+        } else {
+            isVoiceListening = true;
+            try { voiceRecognition.start(); } catch(e) {}
+            showVoiceStatus('💤 等待唤醒词「智回」');
+            speak('语音助手已开启，说智回唤醒我');
+        }
+    }
+
+    function showVoiceStatus(text) {
+        const el = document.getElementById('voiceStatus');
+        el.textContent = text;
+        el.classList.add('show');
+    }
+    function speak(t) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = currentLang === 'zh' ? 'zh-CN' : currentLang === 'ja' ? 'ja-JP' : currentLang === 'ko' ? 'ko-KR' : 'en-US'; speechSynthesis.speak(u); }
+
+    // 好友
+    function addFriend() { const name = document.getElementById('fName').value.trim(); if (!name) return toast('!'); friends.push({ id: 'F' + Date.now(), name, phone: document.getElementById('fPhone').value.trim(), relation: document.getElementById('fRelation').value }); document.getElementById('fName').value = ''; saveData(); closeModal(); renderFriends(); toast('✅'); }
+    function renderFriends() { document.getElementById('friendList').innerHTML = friends.length ? friends.map(f => `<div class="item"><div class="icon">👤</div><div class="info"><div class="name">${f.name}</div><div class="desc">${f.relation}</div></div><button onclick="friends=friends.filter(x=>x.id!=='${f.id}');saveData();renderFriends();" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:14px;cursor:pointer;">×</button></div>`).join('') : '<div style="text-align:center;padding:15px;color:rgba(255,255,255,0.4);font-size:10px;">-</div>'; }
+
+    // 主题
+    function setTheme(name) { currentTheme = name; applyTheme(name); document.querySelectorAll('.theme-item').forEach(t => t.classList.remove('active')); document.querySelector(`.theme-item.${name}`)?.classList.add('active'); saveData(); toast('🎨'); }
+    function applyTheme(name) { const t = THEMES[name] || THEMES.classic; document.documentElement.style.setProperty('--primary', t.primary); document.body.style.background = `linear-gradient(135deg, ${t.bg1}, ${t.bg2})`; document.getElementById('clockFace').style.borderColor = t.primary; }
+
+    function toggleVoice() { toggleVoiceRecognition(); }
+
+    function openPanel(id) { closeAllPanels(); document.getElementById(id).classList.add('open'); document.getElementById('overlay').classList.add('show'); if (id === 'carePanel') updateContactsUI(); }
+    function closeAllPanels() { document.querySelectorAll('.panel').forEach(p => p.classList.remove('open')); document.getElementById('overlay').classList.remove('show'); }
+    function openModal(id) { document.getElementById(id).classList.add('show'); }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); }
+
+    function doLogin() { const p = document.getElementById('phoneInput').value.trim(), n = document.getElementById('nameInput').value.trim(), w = document.getElementById('pwdInput').value; if (!p || p.length !== 11) return toast('!'); if (!w || w.length < 6) return toast('!'); const users = JSON.parse(localStorage.getItem('heshuileUsers') || '{}'); if (users[p]) { if (users[p].pwd !== w) return toast('❌'); user = users[p]; } else { if (!n) return toast('!'); user = { id: 'U' + Date.now().toString(36).toUpperCase(), phone: p, name: n, pwd: w, level: 'free' }; users[p] = user; localStorage.setItem('heshuileUsers', JSON.stringify(users)); } localStorage.setItem('currentUser', JSON.stringify(user)); updateUI(); toast('✅'); }
+    function logout() { user = null; localStorage.removeItem('currentUser'); updateUI(); closeAllPanels(); toast('👋'); }
+    function upgrade() { if (!user) return; user.level = 'vip'; const users = JSON.parse(localStorage.getItem('heshuileUsers') || '{}'); users[user.phone] = user; localStorage.setItem('heshuileUsers', JSON.stringify(users)); localStorage.setItem('currentUser', JSON.stringify(user)); updateUI(); toast('👑'); }
+    function copyInviteLink() { if (!user) return toast('!'); navigator.clipboard.writeText(location.href.split('?')[0] + '?invite=' + user.id).then(() => toast('📋')); }
+    function updateUI() { const btn = document.getElementById('userBtn'); if (user) { btn.textContent = user.level === 'vip' ? '👑' : '👤'; document.getElementById('loginBox').style.display = 'none'; document.getElementById('memberBox').style.display = 'block'; document.getElementById('avatar').textContent = user.name.charAt(0); document.getElementById('userName').textContent = user.name; document.getElementById('userLevel').textContent = user.level === 'vip' ? '👑 VIP' : 'Free'; document.getElementById('inviteCode').textContent = user.id; const qr = document.getElementById('promoQR'); qr.innerHTML = ''; if (typeof QRCode !== 'undefined') QRCode.toCanvas(location.href.split('?')[0] + '?invite=' + user.id, { width: 100, margin: 2 }, (e, c) => { if (!e) qr.appendChild(c); }); } else { btn.textContent = I18N[currentLang].login; document.getElementById('loginBox').style.display = 'block'; document.getElementById('memberBox').style.display = 'none'; } }
+
+    function toast(m) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2000); }
+
+    function saveData() { localStorage.setItem('heshuileData', JSON.stringify({ tickOn, currentTheme, currentSound, volume, friends, ads, reminds, checkinData, centerData, contactsAuthorized, contacts, waterData })); }
+    function loadData() { try { const d = JSON.parse(localStorage.getItem('heshuileData')); if (d) { tickOn = d.tickOn ?? true; currentTheme = d.currentTheme || 'classic'; currentSound = d.currentSound || 'classic'; volume = d.volume ?? 50; friends = d.friends || []; ads = d.ads || ads; reminds = d.reminds || []; checkinData = d.checkinData || checkinData; centerData = d.centerData || centerData; contactsAuthorized = d.contactsAuthorized || false; contacts = d.contacts || []; waterData = d.waterData || waterData; } const u = localStorage.getItem('currentUser'); if (u) user = JSON.parse(u); } catch (e) {} }
+    </script>
+</body>
+</html>
